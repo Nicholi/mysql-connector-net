@@ -300,7 +300,7 @@ namespace MySql.Data.Entity.Tests
         {
           string s = x.GetType().ToString();
         }
-        int i = 0;
+        //int i = 0;
         foreach (var freight in q)
         {
           //   Assert.Equal(Convert.ToInt32(dt.Rows[i++][0]), Convert.ToInt32(freight));

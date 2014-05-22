@@ -31,7 +31,6 @@ using MySql.Data.Entity;
 using MySql.Data.MySqlClient;
 using System.Diagnostics;
 using MySql.Data.MySqlClient.Tests;
-using MySql.Data.MySqlClient.Tests;
 using System.Data.Entity.Migrations;
 #if !EF6
 using System.Data.Entity.Migrations.Infrastructure;

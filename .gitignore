@@ -12,3 +12,6 @@ obj/
 *.user
 *.userprefs
 packages/
+
+connector.snk
+public.snk
