@@ -44,4 +44,6 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("a4c0a8f2-5e48-4227-a712-bf8ae7446101")]
 
+#pragma warning disable 1699
 [assembly: AssemblyKeyName("ConnectorNet")]
+#pragma warning restore 1699

@@ -122,7 +122,7 @@ namespace MySql.Data.Entity
       _customKey = customKey;
     }
 
-    public bool Equals(object other)
+    public override bool Equals(object other)
     {
       if (ReferenceEquals(this, other))
         return true;
@@ -131,7 +131,7 @@ namespace MySql.Data.Entity
       return (modelCacheKey != null) && Equals(modelCacheKey);
     }
 
-    public int GetHashCode()
+    public override int GetHashCode()
     {
       unchecked
       {

@@ -54,4 +54,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
+#pragma warning disable 1699
 [assembly: AssemblyKeyName("ConnectorNet")]
+#pragma warning restore 1699
