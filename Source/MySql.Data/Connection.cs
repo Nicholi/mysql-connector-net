@@ -500,16 +500,20 @@ namespace MySql.Data.MySqlClient
           procedureCache = new ProcedureCache((int)Settings.ProcedureCacheSize);
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         SetState(ConnectionState.Closed, true);
         throw;
       }
 
       // if the user is using old syntax, let them know
-      if (driver.Settings.UseOldSyntax)
-        MySqlTrace.LogWarning(ServerThread,
-          "You are using old syntax that will be removed in future versions");
+#pragma warning disable 618
+        if (driver.Settings.UseOldSyntax)
+#pragma warning restore 618
+        {
+            MySqlTrace.LogWarning(ServerThread,
+                "You are using old syntax that will be removed in future versions");
+        }
 
       SetState(ConnectionState.Open, false);
       driver.Configure(this);
@@ -802,7 +806,7 @@ namespace MySql.Data.MySqlClient
 #endif
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
       if (State == ConnectionState.Open)
         Close();
@@ -846,7 +850,7 @@ namespace MySql.Data.MySqlClient
     /// Async version of Open
     /// </summary>
     /// <returns></returns>
-    public Task OpenAsync()
+    public new Task OpenAsync()
     {
       return Task.Factory.StartNew(() =>
       {

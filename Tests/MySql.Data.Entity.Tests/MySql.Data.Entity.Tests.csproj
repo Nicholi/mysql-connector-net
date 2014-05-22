@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">9.0</VisualStudioVersion>
@@ -7,6 +7,8 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(VisualStudioVersion)' == '12.0'">
@@ -80,8 +82,8 @@
     <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
-    <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
-    <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
+    <OutputPath>bin\$(TargetFrameworkVersion)\DebugEF6\</OutputPath>
+    <DefineConstants>DEBUG;$(DefineConstants);EF6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -92,173 +94,29 @@
     <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
-    <OutputPath>bin\$(TargetFrameworkVersion)\Release\</OutputPath>
-    <DefineConstants>$(DefineConstants)</DefineConstants>
+    <OutputPath>bin\$(TargetFrameworkVersion)\ReleaseEF6\</OutputPath>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugEF6|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
-    <OutputPath>bin\$(TargetFrameworkVersion)\DebugEF6\</OutputPath>
-    <DefineConstants>DEBUG;$(DefineConstants);EF6</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseEF6|AnyCPU'">
-    <OutputPath>bin\$(TargetFrameworkVersion)\ReleaseEF6\</OutputPath>
-    <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
-    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Choose>
-    <When Condition=" '$(VisualStudioVersion)' == '12.0'">
-      <Choose>
-        <When Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" >
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0\lib\net45\EntityFramework.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" >
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 5.0.0\lib\net45\EntityFramework.dll</HintPath>
-            </Reference>
-            <Reference Include="System.Data.Entity" />
-            <Reference Include="System.Data.Entity.Design" />
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
-      <ItemGroup>
-        <Reference Include="System.Core">
-          <RequiredTargetFramework>4.0</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="nunit.framework" />
-        <Reference Include="System" />
-        <Reference Include="System.Configuration" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Runtime.Serialization" />
-        <Reference Include="System.Security" />
-        <Reference Include="System.Xml" />
-        <Reference Include="System.Linq" />
-      </ItemGroup>
-      <ItemGroup>
-        <Compile Include="DatesTypesTests.cs">
-          <SubType>Code</SubType>
-        </Compile>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(VisualStudioVersion)' == '11.0'">
-      <Choose>
-        <When Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" >
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0\lib\net45\EntityFramework.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" >
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 5.0.0\lib\net45\EntityFramework.dll</HintPath>
-            </Reference>
-            <Reference Include="System.Data.Entity" />
-            <Reference Include="System.Data.Entity.Design" />
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
-      <ItemGroup>
-        <Reference Include="System.Core">
-          <RequiredTargetFramework>4.0</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="nunit.framework" />
-        <Reference Include="System" />
-        <Reference Include="System.Configuration" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Runtime.Serialization" />
-        <Reference Include="System.Security" />
-        <Reference Include="System.Xml" />
-        <Reference Include="System.Linq" />
-      </ItemGroup>
-      <ItemGroup>
-        <Compile Include="DatesTypesTests.cs">
-          <SubType>Code</SubType>
-        </Compile>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(VisualStudioVersion)' == '10.0'">
-      <Choose>
-        <When Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" >
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0\lib\net40\EntityFramework.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" >
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 5.0.0\lib\net40\EntityFramework.dll</HintPath>
-            </Reference>
-            <Reference Include="System.Data.Entity" />
-            <Reference Include="System.Data.Entity.Design" />
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
-      <ItemGroup>
-        <Reference Include="System.Core">
-          <RequiredTargetFramework>4.0</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="System" />
-        <Reference Include="System.Configuration" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Runtime.Serialization" />
-        <Reference Include="System.Security" />
-        <Reference Include="System.Xml" />
-      </ItemGroup>
-      <ItemGroup>
-        <Compile Include="DatesTypesTests.cs">
-          <SubType>Code</SubType>
-        </Compile>
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="System.Data.Linq">
-          <RequiredTargetFramework>3.5</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="System.Core">
-          <RequiredTargetFramework>3.5</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="nunit.framework" />
-        <Reference Include="System" />
-        <Reference Include="System.Configuration" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Data.Entity">
-          <RequiredTargetFramework>3.5</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="System.Data.Entity.Design" />
-        <Reference Include="System.Runtime.Serialization" />
-        <Reference Include="System.Security" />
-        <Reference Include="System.Xml" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <ItemGroup>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DatesTypesTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Source\MySql.Data\Properties\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
@@ -266,7 +124,7 @@
     <Compile Include="AggregateOperators.cs" />
     <Compile Include="CanonicalFunctions.cs" />
     <Compile Include="DataTypeTests.cs" />
-    <Compile Include="MyConfiguration.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
+    <Compile Include="MyConfiguration.cs" />
     <Compile Include="ProviderManifestTests.cs" />
     <Compile Include="ProviderServicesTests.cs" />
     <Compile Include="ProceduresAndFunctions.cs" />
@@ -708,9 +566,20 @@
     <Content Include="ModelFirstModel1.edmx.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="xunit">
-      <HintPath>C:\Program Files (x86)\XUnit-1.9.2\xunit.dll</HintPath>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="xunit">
+      <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -725,4 +594,11 @@
   </PropertyGroup>
   <Import Project="EdmxArtifactsRenamingv4.x.targets" Condition="'$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1'" />
   <Import Project="EdmxArtifactsRenamingv3.5.targets" Condition="'$(Framework)' == '3.5'" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
 </Project>

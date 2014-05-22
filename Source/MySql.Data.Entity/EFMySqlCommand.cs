@@ -154,7 +154,7 @@ namespace MySql.Data.Entity
     /// Async version of ExecuteNonQuery
     /// </summary>
     /// <returns>Affected rows.</returns>
-    public Task<int> ExecuteNonQueryAsync()
+    public new Task<int> ExecuteNonQueryAsync()
     {
       return Task.Factory.StartNew(() =>
       {
@@ -166,7 +166,7 @@ namespace MySql.Data.Entity
     /// Async version of ExecuteScalar
     /// </summary>
     /// <returns>Value of the firs row in the first column.</returns>
-    public Task<object> ExecuteScalarAsync()
+    public new Task<object> ExecuteScalarAsync()
     {
       return Task.Factory.StartNew(() =>
       {

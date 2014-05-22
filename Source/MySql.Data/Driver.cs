@@ -421,7 +421,9 @@ namespace MySql.Data.MySqlClient
         return null;
       firstResult = false;
 
+#pragma warning disable 219
       int affectedRows = -1, warnings = 0;
+#pragma warning restore 219
       long insertedId = -1;
       int fieldCount = GetResult(statementId, ref affectedRows, ref insertedId);
       if (fieldCount == -1)

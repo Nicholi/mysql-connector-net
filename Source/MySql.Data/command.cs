@@ -51,7 +51,9 @@ namespace MySql.Data.MySqlClient
     MySqlTransaction curTransaction;
     string cmdText;
     CommandType cmdType;
+#pragma warning disable 414
     long updatedRowCount;
+#pragma warning restore 414
     MySqlParameterCollection parameters;
     private IAsyncResult asyncResult;
     internal Int64 lastInsertedId;
@@ -959,7 +961,7 @@ namespace MySql.Data.MySqlClient
       throw ex;
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
       if (statement != null && statement.IsPrepared)
         statement.CloseStatement();
@@ -971,7 +973,7 @@ namespace MySql.Data.MySqlClient
     /// Async version of ExecuteNonQuery
     /// </summary>
     /// <returns>int</returns>
-    public Task<int> ExecuteNonQueryAsync()
+    public new Task<int> ExecuteNonQueryAsync()
     {
       return Task.Factory.StartNew(() =>
       {
@@ -982,7 +984,7 @@ namespace MySql.Data.MySqlClient
     /// Async version of ExecuteReader
     /// </summary>
     /// <returns>A MySqlDataReader object</returns>
-    public Task<MySqlDataReader> ExecuteReaderAsync()
+    public new Task<MySqlDataReader> ExecuteReaderAsync()
     {
       return ExecuteReaderAsync(CommandBehavior.Default);
     }
@@ -991,7 +993,7 @@ namespace MySql.Data.MySqlClient
     /// </summary>
     /// <param name="behavior">Command Behavior</param>
     /// <returns>A MySqlDataReader object</returns>
-    public Task<MySqlDataReader> ExecuteReaderAsync(CommandBehavior behavior)
+    public new Task<MySqlDataReader> ExecuteReaderAsync(CommandBehavior behavior)
     {
       return Task.Factory.StartNew(() =>
       {
@@ -1002,7 +1004,7 @@ namespace MySql.Data.MySqlClient
     /// Async version of ExecuteScalar
     /// </summary>
     /// <returns>The first column of the first row in the result set, or a null reference if the result set is empty</returns>
-    public Task<object> ExecuteScalarAsync()
+    public new Task<object> ExecuteScalarAsync()
     {
       return Task.Factory.StartNew(() =>
       {

@@ -66,7 +66,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       //TODO: Check this test
       return;
-      
+#pragma warning disable 162
       if (st.Version < new Version(5, 0)) return;      
 
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
@@ -95,6 +95,7 @@ namespace MySql.Data.MySqlClient.Tests
 
       Assert.Equal(hardCount, hardQuery.RawValue);
       Assert.Equal(softCount + 1, softQuery.RawValue);
+#pragma warning restore 162
     }
   }
 }

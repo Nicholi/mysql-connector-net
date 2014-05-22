@@ -317,6 +317,18 @@ namespace MySql.Data.Entity
       return true;
     }
 
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hashCode = (PropertyFragment != null ? PropertyFragment.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (TableName != null ? TableName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (ColumnName != null ? ColumnName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (ColumnAlias != null ? ColumnAlias.GetHashCode() : 0);
+            return hashCode;
+        }
+    }
+
     internal override void Accept(SqlFragmentVisitor visitor)
     {
       visitor.Visit(this);
@@ -523,6 +535,22 @@ namespace MySql.Data.Entity
         if (++cnt == 2) break;
       }
       return true;
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hashCode = 0;
+            if (Properties != null)
+            {
+                foreach (var prop in Properties)
+                {
+                    hashCode = (hashCode * 397) ^ (prop != null ? prop.GetHashCode() : 0);
+                }
+            }
+            return hashCode;
+        }
     }
 
     public PropertyFragment Clone()

@@ -66,18 +66,18 @@ namespace MySql.Data.MySqlClient
       ccdc.Add(ccd);
 
       if (!PerformanceCounterCategory.Exists(Resources.PerfMonCategoryName))
-        PerformanceCounterCategory.Create(Resources.PerfMonCategoryName, null, ccdc);
+        PerformanceCounterCategory.Create(Resources.PerfMonCategoryName, null, PerformanceCounterCategoryType.SingleInstance, ccdc);
     }
 #endif
 
-    public void AddHardProcedureQuery()
+    public override void AddHardProcedureQuery()
     {
       if (!Connection.Settings.UsePerformanceMonitor ||
           procedureHardQueries == null) return;
       procedureHardQueries.Increment();
     }
 
-    public void AddSoftProcedureQuery()
+    public override void AddSoftProcedureQuery()
     {
       if (!Connection.Settings.UsePerformanceMonitor ||
           procedureSoftQueries == null) return;

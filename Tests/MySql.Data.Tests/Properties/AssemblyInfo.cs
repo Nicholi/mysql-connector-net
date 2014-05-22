@@ -65,7 +65,9 @@ using System.Security;
 //
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
+#pragma warning disable 1699
 [assembly: AssemblyKeyName("ConnectorNet")]
+#pragma warning restore 1699
 #if !CF && !RT
 [assembly: AllowPartiallyTrustedCallers]
 #endif

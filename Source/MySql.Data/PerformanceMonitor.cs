@@ -28,7 +28,9 @@ namespace MySql.Data.MySqlClient
 {
   internal class PerformanceMonitor
   {
+#pragma warning disable 169
     private MySqlConnection connection;
+#pragma warning restore 169
 
     public PerformanceMonitor(MySqlConnection connection)
     {

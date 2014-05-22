@@ -40,7 +40,9 @@ namespace MySql.Data.MySqlClient.Memcached
     private static readonly string PROTOCOL_DECREMENT = "decr";
     private static readonly string PROTOCOL_DELETE = "delete";
     private static readonly string PROTOCOL_FLUSHALL = "flush_all";
+#pragma warning disable 414
     private static readonly string PROTOCOL_GET = "get";
+#pragma warning restore 414
     private static readonly string PROTOCOL_GETS = "gets";
     private static readonly string PROTOCOL_INCREMENT = "incr";
     private static readonly string PROTOCOL_PREPEND = "prepend";

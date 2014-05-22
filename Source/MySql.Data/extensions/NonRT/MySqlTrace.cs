@@ -33,8 +33,10 @@ namespace MySql.Data.MySqlClient
     {
 #if !CF
         private static TraceSource source = new TraceSource("mysql");
-        protected static string qaHost;
-        protected static bool qaEnabled = false;
+#pragma warning disable 169
+        private static string qaHost;
+#pragma warning restore 169
+        private static bool qaEnabled = false;
 
         static MySqlTrace()
         {
@@ -71,7 +73,7 @@ namespace MySql.Data.MySqlClient
             // create a EMTraceListener and add it to our source
             TraceListener l = (TraceListener)Activator.CreateInstance("MySql.EMTrace",
                 "MySql.EMTrace.EMTraceListener", false, BindingFlags.CreateInstance,
-                null, new object[] { host, postInterval }, null, null, null).Unwrap();
+                null, new object[] { host, postInterval }, null, null).Unwrap();
             if (l == null)
                 throw new MySqlException(Resources.UnableToEnableQueryAnalysis);
             source.Listeners.Add(l);
