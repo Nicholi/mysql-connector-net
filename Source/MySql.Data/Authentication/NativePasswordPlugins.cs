@@ -73,7 +73,7 @@ namespace MySql.Data.MySqlClient.Authentication
     /// given password/seed according to the new 4.1.1 authentication scheme.
     /// </summary>
     /// <param name="password"></param>
-    /// <param name="seed"></param>
+    /// <param name="seedBytes"></param>
     /// <returns></returns>
     private byte[] Get411Password(string password, byte[] seedBytes)
     {

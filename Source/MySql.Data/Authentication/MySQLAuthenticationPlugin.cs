@@ -38,8 +38,8 @@ namespace MySql.Data.MySqlClient.Authentication
     /// This is a factory method that is used only internally.  It creates an auth plugin based on the method type
     /// </summary>
     /// <param name="method"></param>
-    /// <param name="flags"></param>
-    /// <param name="settings"></param>
+    /// <param name="driver"></param>
+    /// <param name="authData"></param>
     /// <returns></returns>
     internal static MySqlAuthenticationPlugin GetPlugin(string method, NativeDriver driver, byte[] authData)
     {
