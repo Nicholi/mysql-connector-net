@@ -376,16 +376,17 @@ namespace MySql.Data.MySqlClient.Tests
     /// </summary>
     [Fact]
     public void UpdateBatchSizeMoreThanOne()
-    {      
-      st.execSQL(@"CREATE TABLE test(fldID INT NOT NULL, 
+    {
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL(@"CREATE TABLE Test(fldID INT NOT NULL, 
                 fldValue VARCHAR(50) NOT NULL, PRIMARY KEY(fldID))");
 
-      MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT * FROM test", st.conn);
+      MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
       DataTable data = new DataTable();
       adapter.Fill(data);
 
       MySqlCommand ins = new MySqlCommand(
-        "INSERT INTO test(fldID, fldValue) VALUES (?p1, ?p2)", st.conn);
+        "INSERT INTO Test(fldID, fldValue) VALUES (?p1, ?p2)", st.conn);
       ins.Parameters.Add("p1", MySqlDbType.Int32).SourceColumn = "fldID";
       ins.Parameters.Add("p2", MySqlDbType.String).SourceColumn = "fldValue";
 
@@ -408,7 +409,7 @@ namespace MySql.Data.MySqlClient.Tests
       comm.ExecuteNonQuery();
       comm.CommandText = "CREATE PROCEDURE pbug50123(" +
           "IN pfldID INT, IN pfldValue VARCHAR(50)) " +
-          "BEGIN INSERT INTO test(fldID, fldValue) " +
+          "BEGIN INSERT INTO Test(fldID, fldValue) " +
           "VALUES(pfldID, pfldValue); END";
       comm.ExecuteNonQuery();
 

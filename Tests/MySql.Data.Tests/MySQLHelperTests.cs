@@ -122,7 +122,7 @@ namespace MySql.Data.MySqlClient.Tests
       st.execSQL("CREATE PROCEDURE spTest() BEGIN INSERT INTO Test VALUES(1); " +
                  "SELECT SLEEP(2); SELECT 'done'; END");
 
-      using (MySqlDataReader reader = MySqlHelper.ExecuteReaderAsync(st.conn, "call sptest").Result)
+      using (MySqlDataReader reader = MySqlHelper.ExecuteReaderAsync(st.conn, "call spTest").Result)
       {
         Assert.NotNull(reader);
         Assert.True(reader.Read(), "can read");

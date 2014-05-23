@@ -298,7 +298,7 @@ namespace MySql.Data.MySqlClient.Tests
     public void UTF8Parameters()
     {
       st.execSQL("DROP TABLE IF EXISTS Test");
-      st.execSQL("CREATE TABLE test (id int(11) NOT NULL, " +
+      st.execSQL("CREATE TABLE Test (id int(11) NOT NULL, " +
           "value varchar(100) NOT NULL, PRIMARY KEY (id)) " +
           "ENGINE=MyISAM DEFAULT CHARSET=utf8");
 
@@ -307,10 +307,10 @@ namespace MySql.Data.MySqlClient.Tests
       {
         con.Open();
 
-        MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1, 'šđčćžŠĐČĆŽ')", con);
+        MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (1, 'šđčćžŠĐČĆŽ')", con);
         cmd.ExecuteNonQuery();
 
-        cmd.CommandText = "SELECT id FROM test WHERE value =  ?parameter";
+        cmd.CommandText = "SELECT id FROM Test WHERE value =  ?parameter";
         cmd.Parameters.Add("?parameter", MySqlDbType.VarString);
         cmd.Parameters[0].Value = "šđčćžŠĐČĆŽ";
         object o = cmd.ExecuteScalar();
