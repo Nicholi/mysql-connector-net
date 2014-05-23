@@ -243,7 +243,7 @@ namespace MySql.Web.Tests
       string webserverPath;
       if (ver.Major == 4)
       {
-        webserverPath = @"C:\Program Files (x86)\Common Files\microsoft shared\DevServer\10.0\WebDev.WebServer40.exe";
+        webserverPath = @"C:\Program Files (x86)\Common Files\microsoft shared\DevServer\11.0\WebDev.WebServer40.exe";
       }
       else
       {

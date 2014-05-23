@@ -45,6 +45,7 @@ namespace MySql.Data.MySqlClient.Tests
     public void SetFixture(SetUpClass data)
     {      
       st = data;
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.csAdditions = ";logging=True;";      
       st.createTable("CREATE TABLE Test (id int, name VARCHAR(200))", "INNODB");      
     }

@@ -42,11 +42,15 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS table1");
+      st.execSQL("DROP TABLE IF EXISTS table2");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
     }
 
     private void CreateDefaultTable()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL AUTO_INCREMENT, " +
         "id2 INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, " +
         "ts TIMESTAMP, OriginalId INT, PRIMARY KEY(id, id2))");
@@ -217,6 +221,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void UpdateExtendedTextFields()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, notes MEDIUMTEXT, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test VALUES(1, 'This is my note')");
 
@@ -251,6 +256,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void DiscreteValues()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, name varchar(200), dt DATETIME, b1 TEXT)");
       st.execSQL("INSERT INTO Test VALUES (1, 'Test', '2004-08-01', 'Text 1')");
       st.execSQL("INSERT INTO Test VALUES (2, 'Test 1', '2004-07-02', 'Text 2')");
@@ -294,6 +300,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ColumnMapping()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, dcname varchar(100), primary key(id))");
       st.execSQL("INSERT INTO Test VALUES (1, 'Test1')");
       st.execSQL("INSERT INTO Test VALUES (2, 'Test2')");
@@ -305,6 +312,8 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TestFillWithHelper()
     {
+      st.execSQL("DROP TABLE IF EXISTS table1");
+      st.execSQL("DROP TABLE IF EXISTS table2");
       st.execSQL("CREATE TABLE table1 (`key` INT, PRIMARY KEY(`key`))");
       st.execSQL("CREATE TABLE table2 (`key` INT, PRIMARY KEY(`key`))");
       st.execSQL("INSERT INTO table1 VALUES (1)");
@@ -326,6 +335,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void AutoIncrementColumns()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int(10) unsigned NOT NULL auto_increment primary key)");
       st.execSQL("INSERT INTO Test VALUES(NULL)");
 
@@ -355,6 +365,7 @@ namespace MySql.Data.MySqlClient.Tests
       if (st.Version < new Version(4, 1))
         return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test ( id INT NOT NULL, amount INT )");
       st.execSQL("INSERT INTO Test VALUES (1, 44)");
       st.execSQL("INSERT INTO Test VALUES (2, 88)");
@@ -375,6 +386,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Bug16307()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (OrgNum int auto_increment, CallReportNum int, Stamp varchar(50), " +
         "WasRealCall varchar(50), WasHangup varchar(50), primary key(orgnum))");
 
@@ -421,6 +433,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void QuietOpenAndClose()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test VALUES(1)");
 
@@ -453,6 +466,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void RangeFill()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT)");
       st.execSQL("INSERT INTO Test VALUES (1)");
       st.execSQL("INSERT INTO Test VALUES (2)");
@@ -467,6 +481,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void FillWithNulls()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(@"CREATE TABLE Test (id INT UNSIGNED NOT NULL AUTO_INCREMENT, 
             name VARCHAR(100), PRIMARY KEY(id))");
 
@@ -548,6 +563,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void SkippingRowsLargerThan1024()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name TEXT)");
 
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, ?name)", st.conn);
@@ -568,10 +584,11 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TestBatchingInserts()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20), PRIMARY KEY(id))");
 
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
-      MySqlCommand ins = new MySqlCommand("INSERT INTO test (id, name) VALUES (?p1, ?p2)", st.conn);
+      MySqlCommand ins = new MySqlCommand("INSERT INTO Test (id, name) VALUES (?p1, ?p2)", st.conn);
       da.InsertCommand = ins;
       ins.UpdatedRowSource = UpdateRowSource.None;
       ins.Parameters.Add("?p1", MySqlDbType.Int32).SourceColumn = "id";
@@ -604,6 +621,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TestBatchingUpdates()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20), PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test VALUES (1, 'Test 1')");
       st.execSQL("INSERT INTO Test VALUES (2, 'Test 2')");
@@ -641,6 +659,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TestBatchingMixed()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20), PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test VALUES (1, 'Test 1')");
       st.execSQL("INSERT INTO Test VALUES (2, 'Test 2')");
@@ -691,6 +710,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       int blobSize = 64000;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, img BLOB, PRIMARY KEY(id))");
 
       int numRows = (st.maxPacketSize / blobSize) * 2;
@@ -780,27 +800,28 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void AdapterConcurrentException()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(
-        "CREATE TABLE T (" +
+        "CREATE TABLE Test (" +
         "id_auto int(11) NOT NULL AUTO_INCREMENT," +
         "field varchar(50) DEFAULT NULL," +
         "PRIMARY KEY (id_auto))");
 
-      MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM T", st.conn);
+      MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
       da.InsertCommand = st.conn.CreateCommand();
-      da.InsertCommand.CommandText = @"INSERT INTO T(field) VALUES (@p_field); 
-                      SELECT * FROM T WHERE id_auto=@@IDENTITY";
+      da.InsertCommand.CommandText = @"INSERT INTO Test(field) VALUES (@p_field); 
+                      SELECT * FROM Test WHERE id_auto=@@IDENTITY";
       da.InsertCommand.Parameters.Add("@p_field", MySqlDbType.VarChar, 50, "field");
       da.InsertCommand.UpdatedRowSource = UpdateRowSource.FirstReturnedRecord;
 
       da.DeleteCommand = st.conn.CreateCommand();
-      da.DeleteCommand.CommandText = "DELETE FROM T WHERE id_auto=@id_auto";
+      da.DeleteCommand.CommandText = "DELETE FROM Test WHERE id_auto=@id_auto";
       da.DeleteCommand.Parameters.Add("@id_auto", MySqlDbType.Int32, 4, "id_auto");
 
       DataSet ds = new DataSet();
-      da.Fill(ds, "T");
+      da.Fill(ds, "Test");
 
-      DataTable table = ds.Tables["T"];
+      DataTable table = ds.Tables["Test"];
       DataRow r = table.NewRow();
       r["field"] = "row";
       table.Rows.Add(r);
@@ -816,8 +837,8 @@ namespace MySql.Data.MySqlClient.Tests
 
       da.Update(table); // here was concurrencyviolation
       da.Fill(ds);
-      Assert.Equal(ds.Tables["T"].Rows.Count, 1);
-      Assert.Equal(ds.Tables["T"].Rows[0]["field"], "row2");
+      Assert.Equal(ds.Tables["Test"].Rows.Count, 1);
+      Assert.Equal(ds.Tables["Test"].Rows[0]["field"], "row2");
     }
 
     /// <summary>
@@ -826,6 +847,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BatchingConnectionClosed()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20), PRIMARY KEY(id))");
 
       MySqlConnection c = new MySqlConnection(st.GetConnectionString(true));
@@ -833,19 +855,19 @@ namespace MySql.Data.MySqlClient.Tests
       MySqlConnection c3 = new MySqlConnection(st.GetConnectionString(true));
 
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", c);
-      MySqlCommand ins = new MySqlCommand("INSERT INTO test (id, name) VALUES (?p1, ?p2)", c);
+      MySqlCommand ins = new MySqlCommand("INSERT INTO Test (id, name) VALUES (?p1, ?p2)", c);
       da.InsertCommand = ins;
       ins.UpdatedRowSource = UpdateRowSource.None;
       ins.Parameters.Add("?p1", MySqlDbType.Int32).SourceColumn = "id";
       ins.Parameters.Add("?p2", MySqlDbType.VarChar, 20).SourceColumn = "name";
 
-      MySqlCommand del = new MySqlCommand("delete from test where id=?p1", c2);
+      MySqlCommand del = new MySqlCommand("delete from Test where id=?p1", c2);
       da.DeleteCommand = del;
       del.UpdatedRowSource = UpdateRowSource.None;
       del.Parameters.Add("?p1", MySqlDbType.Int32).SourceColumn = "id";
 
 
-      MySqlCommand upd = new MySqlCommand("update test set id=?p1, name=?p2  where id=?p1", c3);
+      MySqlCommand upd = new MySqlCommand("update Test set id=?p1, name=?p2  where id=?p1", c3);
       da.UpdateCommand = upd;
       upd.UpdatedRowSource = UpdateRowSource.None;
       upd.Parameters.Add("?p1", MySqlDbType.Int32).SourceColumn = "id";
@@ -1043,6 +1065,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS DAFillSchemaAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS DAFillSchemaAsyncSpTest");
       st.execSQL("CREATE PROCEDURE DAFillSchemaAsyncSpTest() BEGIN SELECT * FROM DAFillSchemaAsyncTest; END");
       st.execSQL(@"CREATE TABLE DAFillSchemaAsyncTest(id INT AUTO_INCREMENT, name VARCHAR(20), PRIMARY KEY (id)) ");
 

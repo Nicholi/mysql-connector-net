@@ -40,6 +40,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       st = data;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME, d DATE, " +
         "t TIME, ts TIMESTAMP, PRIMARY KEY(id))");
     }
@@ -306,7 +307,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Bug19481()
     {
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test(ID INT NOT NULL AUTO_INCREMENT, " +
         "SATELLITEID VARCHAR(3) NOT NULL, ANTENNAID INT, AOS_TIMESTAMP DATETIME NOT NULL, " +
         "TEL_TIMESTAMP DATETIME, LOS_TIMESTAMP DATETIME, PRIMARY KEY (ID))");
@@ -428,7 +429,7 @@ namespace MySql.Data.MySqlClient.Tests
       DateTime dt = DateTime.Now;
       MySqlCommand cmd = new MySqlCommand();
 
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(6), d DATE, " +
         "t TIME, ts TIMESTAMP, PRIMARY KEY(id))");
 
@@ -469,7 +470,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c.Open();
 
-        st.execSQL("DROP TABLE Test");
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(6), d DATE, " +
           "t TIME, ts TIMESTAMP, PRIMARY KEY(id))");
 
@@ -526,7 +527,7 @@ namespace MySql.Data.MySqlClient.Tests
       DateTime dt = DateTime.Now;
       MySqlCommand cmd = new MySqlCommand();
 
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(6), d DATE, " +
         "t TIME(6), ts TIMESTAMP(6), PRIMARY KEY(id))");
 
@@ -562,7 +563,7 @@ namespace MySql.Data.MySqlClient.Tests
       DateTime dt = DateTime.Now;
       MySqlCommand cmd = new MySqlCommand();
 
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(6), d DATE, " +
         "t TIME(6), ts TIMESTAMP(6), PRIMARY KEY(id))");
 
@@ -613,7 +614,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c.Open();
 
-        st.execSQL("DROP TABLE Test");
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(6), d DATE, " +
           "t TIME(6), ts TIMESTAMP(6), PRIMARY KEY(id))");
 
@@ -655,7 +656,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c.Open();
 
-        st.execSQL("DROP TABLE Test");
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(6), d DATE, " +
           "t TIME(6), ts TIMESTAMP(6), PRIMARY KEY(id))");
 
@@ -782,7 +783,7 @@ namespace MySql.Data.MySqlClient.Tests
       DateTime dt = new DateTime(2012, 3, 18, 23, 9, 7, 6);
       MySqlCommand cmd = new MySqlCommand();
 
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(3), PRIMARY KEY(id))");
 
       using (MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";ignore prepare=False;"))
@@ -815,7 +816,7 @@ namespace MySql.Data.MySqlClient.Tests
       DateTime dt = new DateTime(2012, 3, 18, 23, 9, 7, 6);
       MySqlCommand cmd = new MySqlCommand();
 
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(3), PRIMARY KEY(id))");
       cmd.Connection = st.conn;
       cmd.CommandText = "INSERT INTO Test VALUES(1, ?dt)";
@@ -842,7 +843,7 @@ namespace MySql.Data.MySqlClient.Tests
       DateTime dt = new DateTime(2012, 3, 18, 23, 9, 7, 6);
       MySqlCommand cmd = new MySqlCommand();
 
-      st.execSQL("DROP TABLE Test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME(4), PRIMARY KEY(id))");
       cmd.Connection = st.conn;
       cmd.CommandText = "INSERT INTO Test VALUES(1, ?dt)";

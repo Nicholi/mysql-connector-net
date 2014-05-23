@@ -47,14 +47,17 @@ namespace MySql.Data.MySqlClient.Tests
     public void SetFixture(SetUpClass data)
     {
       st = data;
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");      
     }
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
-      st.execSQL("DROP PROCEDURE IF EXISTS spTest1");
-      st.execSQL("DROP PROCEDURE IF EXISTS spTest2");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      for (int i = 0; i < 10; i++)
+      {
+        st.execSQL(String.Format("DROP PROCEDURE IF EXISTS spTest{0}", i));
+      }
     }
 
     [Fact]
@@ -66,6 +69,7 @@ namespace MySql.Data.MySqlClient.Tests
       string scriptText = String.Empty;
       for (int i = 0; i < 10; i++)
       {
+        st.execSQL(String.Format("DROP PROCEDURE IF EXISTS spTest{0}", i));
         scriptText += String.Format(statementTemplate1, i, "$$");
       }
       MySqlScript script = new MySqlScript(scriptText);
@@ -264,8 +268,8 @@ namespace MySql.Data.MySqlClient.Tests
       string scriptText = String.Empty;
       for (int i = 0; i < 10; i++)
       {
-        scriptText += String.Format(spTpl, i, "$$");
-      }
+        st.execSQL(String.Format("DROP PROCEDURE IF EXISTS SEScriptWithProceduresAsyncSpTest{0}", i));
+        scriptText += String.Format(spTpl, i, "$$");      }
       MySqlScript script = new MySqlScript(scriptText);
       script.StatementExecuted += new MySqlStatementExecutedEventHandler(delegate(object sender, MySqlScriptEventArgs e)
       {

@@ -46,6 +46,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadSimple()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -73,6 +74,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadReadOnlyFile()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -111,6 +113,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadSimple2()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -137,6 +140,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadSimple3()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -164,6 +168,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadSimple4()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -197,6 +202,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadFieldQuoting()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), name2 VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -227,6 +233,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadEscaping()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), name2 VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -257,6 +264,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadConflictOptionReplace()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -300,6 +308,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadConflictOptionIgnore()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       // first create the external file
@@ -345,6 +354,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadSimpleAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadSimpleAsyncTest");
       st.execSQL("CREATE TABLE BulkLoadSimpleAsyncTest (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       string path = Path.GetTempFileName();
       StreamWriter sw = new StreamWriter(path);
@@ -372,6 +382,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadReadOnlyFileAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadReadOnlyFileAsyncTest");
       st.execSQL("CREATE TABLE BulkLoadReadOnlyFileAsyncTest (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       string path = Path.GetTempFileName();
@@ -411,6 +422,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadFieldQuotingAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadFieldQuotingAsyncTest");
       st.execSQL("CREATE TABLE BulkLoadFieldQuotingAsyncTest (id INT NOT NULL, name VARCHAR(250), name2 VARCHAR(250), PRIMARY KEY(id))");
 
       string path = Path.GetTempFileName();
@@ -442,6 +454,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadEscapingAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadEscapingAsyncTest");
       st.execSQL("CREATE TABLE BulkLoadEscapingAsyncTest (id INT NOT NULL, name VARCHAR(250), name2 VARCHAR(250), PRIMARY KEY(id))");
 
       string path = Path.GetTempFileName();
@@ -473,6 +486,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadConflictOptionReplaceAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadConflictOptionReplaceAsyncTest");
       st.execSQL("CREATE TABLE BulkLoadConflictOptionReplaceAsyncTest (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       string path = Path.GetTempFileName();
@@ -515,6 +529,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadConflictOptionIgnoreAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadConflictOptionIgnoreAsyncTest");
       st.execSQL("CREATE TABLE BulkLoadConflictOptionIgnoreAsyncTest (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 
       string path = Path.GetTempFileName();
@@ -560,6 +575,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadColumnOrderAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS BulkLoadColumnOrderAsyncTest");
       st.execSQL(@"CREATE TABLE BulkLoadColumnOrderAsyncTest (id INT NOT NULL, n1 VARCHAR(250), n2 VARCHAR(250), n3 VARCHAR(250), PRIMARY KEY(id))");
 
       string path = Path.GetTempFileName();
@@ -603,6 +619,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BulkLoadColumnOrder()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(@"CREATE TABLE Test (id INT NOT NULL, n1 VARCHAR(250), n2 VARCHAR(250), 
             n3 VARCHAR(250), PRIMARY KEY(id))");
 
@@ -638,7 +655,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
   }
 }

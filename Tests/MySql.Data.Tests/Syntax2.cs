@@ -57,12 +57,13 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     [Fact]
     public void CommentsInSQL()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       string sql = "INSERT INTO Test /* my table */ VALUES (1 /* this is the id */, 'Test' );" +
         "/* These next inserts are just for testing \r\n" +
@@ -88,6 +89,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void LastInsertid()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test(id int auto_increment, name varchar(20), primary key(id))");
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(NULL, 'test')", st.conn);
       cmd.ExecuteNonQuery();
@@ -130,6 +132,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void EscapedBackslash()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test(id INT, name VARCHAR(20))");
 
       MySqlCommand cmd = new MySqlCommand(@"INSERT INTO Test VALUES (1, '\\=\\')", st.conn);

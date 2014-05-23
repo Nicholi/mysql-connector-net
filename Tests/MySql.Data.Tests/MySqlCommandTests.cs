@@ -38,7 +38,16 @@ namespace MySql.Data.MySqlClient.Tests
   {
     protected override void Dispose( bool disposing )
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS Test1");
+      st.execSQL("DROP TABLE IF EXISTS TableWithDateAsPrimaryKey");
+      st.execSQL("DROP TABLE IF EXISTS TableWithStringAsPrimaryKey");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
+      try
+      {
+        st.execSQL("DROP USER 'tester2'@'%'");
+      }
+      catch (MySqlException) { }
       base.Dispose( disposing );
     }
 
@@ -56,19 +65,19 @@ namespace MySql.Data.MySqlClient.Tests
         cmd.ExecuteNonQuery();
         try
         {
-            cmd.CommandText = "drop user 'tester2'@'localhost'";
+            cmd.CommandText = "drop user 'tester2'@'%'";
             cmd.ExecuteNonQuery();
         }
         catch (Exception)
         {
         }
-        cmd.CommandText = "CREATE USER 'tester2'@'localhost' IDENTIFIED BY '123';";
+        cmd.CommandText = "CREATE USER 'tester2'@'%' IDENTIFIED BY '123';";
         cmd.ExecuteNonQuery();
-        cmd.CommandText = "grant execute on function `MyTwice` to 'tester2'@'localhost';";
+        cmd.CommandText = "grant execute on function `MyTwice` to 'tester2'@'%';";
         cmd.ExecuteNonQuery();
-        cmd.CommandText = "grant execute on procedure `spMyTwice` to 'tester2'@'localhost'";
+        cmd.CommandText = "grant execute on procedure `spMyTwice` to 'tester2'@'%'";
         cmd.ExecuteNonQuery();
-        cmd.CommandText = "grant select on table mysql.proc to 'tester2'@'localhost'";
+        cmd.CommandText = "grant select on table mysql.proc to 'tester2'@'%'";
         cmd.ExecuteNonQuery();
         cmd.CommandText = "flush privileges";
         cmd.ExecuteNonQuery();
@@ -106,6 +115,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void InsertTest()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
       // do the insert
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id,name) VALUES(10,'Test')", st.conn);
@@ -134,6 +144,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void UpdateTest()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
       st.execSQL("INSERT INTO Test (id,name) VALUES(10, 'Test')");
       st.execSQL("INSERT INTO Test (id,name) VALUES(11, 'Test2')");
@@ -171,6 +182,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void DeleteTest()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
       st.execSQL("INSERT INTO Test (id, name) VALUES(1, 'Test')");
       st.execSQL("INSERT INTO Test (id, name) VALUES(2, 'Test2')");
@@ -189,6 +201,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void CtorTest()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
       MySqlTransaction txn = st.conn.BeginTransaction();
       MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", st.conn);
@@ -264,6 +277,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, ?str)", st.conn);
       cmd.Parameters.Add("?str", MySqlDbType.VarChar);
@@ -288,6 +302,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, 'Test')", st.conn);
       cmd.Prepare();
@@ -311,6 +326,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void GenWarnings()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, dt DATETIME)");
       st.execSQL("INSERT INTO Test VALUES (1, NOW())");
       st.execSQL("INSERT INTO Test VALUES (2, NOW())");
@@ -329,6 +345,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void CloseReaderAfterFailedConvert()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (dt DATETIME)");
       st.execSQL("INSERT INTO Test VALUES ('00-00-0000 00:00:00')");
 
@@ -442,6 +459,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void UseAffectedRows()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20))");
       st.execSQL("INSERT INTO Test VALUES (1, 'A')");
       st.execSQL("INSERT INTO Test VALUES (2, 'B')");
@@ -477,6 +495,8 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void TableCommandType()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS Test1");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20))");
       st.execSQL("INSERT INTO Test VALUES (1, 'A')");
       st.execSQL("CREATE TABLE Test1 (id INT, name VARCHAR(20))");
@@ -546,8 +566,9 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void BatchUpdatesAndDeletes()
     {
-      st.execSQL("CREATE TABLE test (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20))");
-      st.execSQL("INSERT INTO test VALUES (1, 'boo'), (2, 'boo'), (3, 'boo')");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20))");
+      st.execSQL("INSERT INTO Test VALUES (1, 'boo'), (2, 'boo'), (3, 'boo')");
 
       MySqlTrace.Listeners.Clear();
       MySqlTrace.Switch.Level = SourceLevels.All;
@@ -558,7 +579,7 @@ namespace MySql.Data.MySqlClient.Tests
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
-        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", c);
+        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", c);
         MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
         da.UpdateCommand = cb.GetUpdateCommand();
         da.UpdateCommand.UpdatedRowSource = UpdateRowSource.None;
@@ -664,6 +685,8 @@ alter table longids AUTO_INCREMENT = 2147483640;";
    {
      if (st.Version < new Version(5, 0)) return;
 
+     st.execSQL("DROP TABLE IF EXISTS CMDNonQueryAsyncTest");
+     st.execSQL("DROP PROCEDURE IF EXISTS CMDNonQueryAsyncSpTest");
      st.execSQL("CREATE TABLE CMDNonQueryAsyncTest (id int)");
      st.execSQL("CREATE PROCEDURE CMDNonQueryAsyncSpTest() BEGIN SET @x=0; REPEAT INSERT INTO CMDNonQueryAsyncTest VALUES(@x); SET @x=@x+1; UNTIL @x = 100 END REPEAT; END");
 
@@ -687,6 +710,8 @@ alter table longids AUTO_INCREMENT = 2147483640;";
      if (st.conn.State != ConnectionState.Open)
        st.conn.Open();
 
+     st.execSQL("DROP TABLE IF EXISTS CMDReaderAsyncTest");
+     st.execSQL("DROP PROCEDURE IF EXISTS CMDReaderAsyncSpTest");
      st.execSQL("CREATE TABLE CMDReaderAsyncTest (id int)");
      st.execSQL("CREATE PROCEDURE CMDReaderAsyncSpTest() BEGIN INSERT INTO CMDReaderAsyncTest VALUES(1); SELECT SLEEP(2); SELECT 'done'; END");
 

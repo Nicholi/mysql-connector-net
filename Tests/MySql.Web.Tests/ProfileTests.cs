@@ -43,7 +43,7 @@ namespace MySql.Web.Tests
     {
       st = data;
       st.rootConn.Close();
-      st.rootConn = new MySqlConnection("server=localhost;userid=root;pwd=;database=" + st.conn.Database + ";port=" + st.port);
+      st.rootConn = new MySqlConnection("server=" + st.host + ";userid=" + st.user + ";pwd=" + st.password + ";database=" + st.conn.Database + ";port=" + st.port);
       st.rootConn.Open();
     }
 

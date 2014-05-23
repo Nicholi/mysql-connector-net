@@ -39,7 +39,9 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS test");
+      st.execSQL("DROP TABLE IF EXISTS test1");
+      st.execSQL("DROP TABLE IF EXISTS test2");
     }
 
     [Fact]
@@ -197,6 +199,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Columns()
     {
+      st.execSQL("DROP TABLE IF EXISTS test");
       st.execSQL(@"CREATE TABLE test (col1 int, col2 decimal(20,5), 
         col3 varchar(50) character set utf8, col4 tinyint unsigned, 
         col5 varchar(20) default 'boo')");
@@ -331,6 +334,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS test");
       st.execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
       string[] restrictions = new string[4];
       restrictions[2] = "test";
@@ -379,6 +383,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void IndexColumns()
     {
+      st.execSQL("DROP TABLE IF EXISTS test");
       st.execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
       string[] restrictions = new string[5];
       restrictions[2] = "test";
@@ -555,6 +560,7 @@ namespace MySql.Data.MySqlClient.Tests
       if (st.Version < new Version(5, 1, 6)) return;
 
       st.execSQL("DROP TABLE IF EXISTS test1");
+      st.execSQL("DROP TABLE IF EXISTS test2");
       st.execSQL("CREATE TABLE test1 (id int)");
       st.execSQL("CREATE TABLE test2 (count int)");
       st.execSQL("INSERT INTO test2 VALUES (0)");

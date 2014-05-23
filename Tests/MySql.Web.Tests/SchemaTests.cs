@@ -120,7 +120,7 @@ namespace MySql.Web.Tests
     {
       st.LoadSchema(1);
 
-      MySqlCommand cmd = new MySqlCommand("SHOW CREATE TABLE mysql_membership", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SHOW CREATE TABLE mysql_Membership", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         reader.Read();
@@ -130,7 +130,7 @@ namespace MySql.Web.Tests
       }
 
       st.LoadSchema(2);
-      cmd = new MySqlCommand("SHOW CREATE TABLE mysql_membership", st.conn);
+      cmd = new MySqlCommand("SHOW CREATE TABLE mysql_Membership", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         reader.Read();
@@ -145,26 +145,26 @@ namespace MySql.Web.Tests
     {
       st.LoadSchema(1);
       st.LoadSchema(2);
-      st.execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+      st.execSQL(@"INSERT INTO mysql_Membership (pkid, username, password, applicationname, lastactivitydate) 
                 VALUES('1', 'user1', '', 'app1', '2007-01-01')");
-      st.execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+      st.execSQL(@"INSERT INTO mysql_Membership (pkid, username, password, applicationname, lastactivitydate) 
                 VALUES('2', 'user2', '', 'app1', '2007-01-01')");
-      st.execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+      st.execSQL(@"INSERT INTO mysql_Membership (pkid, username, password, applicationname, lastactivitydate) 
                 VALUES('3', 'user1', '', 'app2', '2007-01-01')");
-      st.execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+      st.execSQL(@"INSERT INTO mysql_Membership (pkid, username, password, applicationname, lastactivitydate) 
                 VALUES('4', 'user2', '', 'app2', '2007-01-01')");
-      st.execSQL(@"INSERT INTO mysql_roles VALUES ('role1', 'app1')");
-      st.execSQL(@"INSERT INTO mysql_roles VALUES ('role2', 'app1')");
-      st.execSQL(@"INSERT INTO mysql_roles VALUES ('role1', 'app2')");
-      st.execSQL(@"INSERT INTO mysql_roles VALUES ('role2', 'app2')");
+      st.execSQL(@"INSERT INTO mysql_Roles VALUES ('role1', 'app1')");
+      st.execSQL(@"INSERT INTO mysql_Roles VALUES ('role2', 'app1')");
+      st.execSQL(@"INSERT INTO mysql_Roles VALUES ('role1', 'app2')");
+      st.execSQL(@"INSERT INTO mysql_Roles VALUES ('role2', 'app2')");
       st.execSQL(@"INSERT INTO mysql_UsersInRoles VALUES ('user1', 'role1', 'app1')");
       st.execSQL(@"INSERT INTO mysql_UsersInRoles VALUES ('user2', 'role2', 'app1')");
       st.execSQL(@"INSERT INTO mysql_UsersInRoles VALUES ('user1', 'role1', 'app2')");
       st.execSQL(@"INSERT INTO mysql_UsersInRoles VALUES ('user2', 'role2', 'app2')");
       st.LoadSchema(3);
-      Assert.False(st.TableExists("mysql_membership"));
-      Assert.False(st.TableExists("mysql_roles"));
-      Assert.False(st.TableExists("mysql_usersinroles"));
+      Assert.False(st.TableExists("mysql_Membership"));
+      Assert.False(st.TableExists("mysql_Roles"));
+      Assert.False(st.TableExists("mysql_UsersInRoles"));
     }
 
     [Fact]

@@ -58,12 +58,13 @@ namespace MySql.Data.MySqlClient.Tests
         st.conn.Close();
   
       st.conn.Open();
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(100))");
     }
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");      
     }
 
@@ -221,10 +222,10 @@ namespace MySql.Data.MySqlClient.Tests
     public void UTF8AfterClosing()
     {
       string originalValue = "??????????";
-      st.execSQL("DROP TABLE IF EXISTS test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
 
 
-      st.execSQL("CREATE TABLE test (id int(11) NOT NULL, " +
+      st.execSQL("CREATE TABLE Test (id int(11) NOT NULL, " +
         "value varchar(100) NOT NULL, PRIMARY KEY  (`id`) " +
         ") ENGINE=MyISAM DEFAULT CHARSET=utf8");
 
@@ -233,10 +234,10 @@ namespace MySql.Data.MySqlClient.Tests
       {
         con.Open();
 
-        MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1, '??????????')", con);
+        MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (1, '??????????')", con);
         cmd.ExecuteNonQuery();
 
-        cmd = new MySqlCommand("SELECT value FROM test WHERE id = 1", con);
+        cmd = new MySqlCommand("SELECT value FROM Test WHERE id = 1", con);
         string firstS = cmd.ExecuteScalar().ToString();
         Assert.Equal(originalValue, firstS);
 
@@ -244,7 +245,7 @@ namespace MySql.Data.MySqlClient.Tests
         con.Open();
 
         //Does not work:
-        cmd = new MySqlCommand("SELECT value FROM test WHERE id = 1", con);
+        cmd = new MySqlCommand("SELECT value FROM Test WHERE id = 1", con);
         string secondS = cmd.ExecuteScalar().ToString();
 
         st.KillConnection(con);
@@ -293,13 +294,14 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
-      st.execSQL("DROP TABLE IF EXISTS test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(50))");
-      st.execSQL("CREATE PROCEDURE spTest(theid INT) BEGIN SELECT * FROM test WHERE id=theid; END");
-      st.execSQL("INSERT INTO test VALUES (1, 'First')");
-      st.execSQL("INSERT INTO test VALUES (2, 'Second')");
-      st.execSQL("INSERT INTO test VALUES (3, 'Third')");
-      st.execSQL("INSERT INTO test VALUES (4, 'Fourth')");
+      st.execSQL("CREATE PROCEDURE spTest(theid INT) BEGIN SELECT * FROM Test WHERE id=theid; END");
+      st.execSQL("INSERT INTO Test VALUES (1, 'First')");
+      st.execSQL("INSERT INTO Test VALUES (2, 'Second')");
+      st.execSQL("INSERT INTO Test VALUES (3, 'Third')");
+      st.execSQL("INSERT INTO Test VALUES (4, 'Fourth')");
 
       string connStr = st.GetPoolingConnectionString();
 
@@ -562,15 +564,15 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ConnectionResetAfterUnicode()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id INT, name VARCHAR(20) CHARSET UCS2)");
-      st.execSQL("INSERT INTO test VALUES (1, 'test')");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20) CHARSET UCS2)");
+      st.execSQL("INSERT INTO Test VALUES (1, 'test')");
       
       string connStr = st.GetPoolingConnectionString() + ";connection reset=true;min pool size=1; max pool size=1";
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
-        MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", c);
+        MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c);
         using (MySqlDataReader r = cmd.ExecuteReader())
         {
           r.Read();
@@ -629,8 +631,8 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void CacheServerPropertiesCausePacketTooLarge()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id INT(10), image BLOB)");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id INT(10), image BLOB)");
       
 #if CLR4     
       Parallel.Invoke(
@@ -649,12 +651,12 @@ namespace MySql.Data.MySqlClient.Tests
       using (MySqlConnection c1 = new MySqlConnection(st.GetPoolingConnectionString() + ";logging=true;cache server properties=true"))
       {
         c1.Open();
-        MySqlCommand cmd = new MySqlCommand("SELECT Count(*) from test", c1);
+        MySqlCommand cmd = new MySqlCommand("SELECT Count(*) from Test", c1);
         var count = cmd.ExecuteScalar();
         Assert.Equal(3, Convert.ToInt32(count));
       }
 
-      st.execSQL("DROP TABLE test ");
+      st.execSQL("DROP TABLE Test");
     }
 
 
@@ -670,7 +672,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c1.Open();
         byte[] image = Utils.CreateBlob(7152);
-        MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(NULL, ?image)", c1);
+        MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(NULL, ?image)", c1);
         cmd.Parameters.AddWithValue("?image", image);
         cmd.ExecuteNonQuery();
       }

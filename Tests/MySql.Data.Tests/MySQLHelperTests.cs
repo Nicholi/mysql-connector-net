@@ -43,7 +43,10 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS table1");
+      st.execSQL("DROP TABLE IF EXISTS table2");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
     }
 
     /// <summary>
@@ -52,12 +55,13 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void EscapeStringMethodCanEscapeQuotationMark()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
 
-      MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1,\"firstname\")", st.conn);
+      MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (1,\"firstname\")", st.conn);
       cmd.ExecuteNonQuery();
 
-      cmd = new MySqlCommand("UPDATE test SET name = \"" + MySqlHelper.EscapeString("test\"name\"") + "\";", st.conn);
+      cmd = new MySqlCommand("UPDATE Test SET name = \"" + MySqlHelper.EscapeString("test\"name\"") + "\";", st.conn);
       cmd.ExecuteNonQuery();
 
       cmd.CommandText = "SELECT name FROM Test WHERE id=1";
@@ -73,9 +77,10 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS MSHNonQueryAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS MSHNonQueryAsyncSpTest");
       st.execSQL("CREATE TABLE MSHNonQueryAsyncTest (id int)");
       st.execSQL("CREATE PROCEDURE MSHNonQueryAsyncSpTest() BEGIN SET @x=0; REPEAT INSERT INTO MSHNonQueryAsyncTest VALUES(@x); SET @x=@x+1; UNTIL @x = 100 END REPEAT; END");
-
       int result = await MySqlHelper.ExecuteNonQueryAsync(st.conn, "call MSHNonQueryAsyncSpTest", null);
       Assert.NotEqual(-1, result);
 
@@ -88,6 +93,8 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public async Task ExecuteDataSetAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS MSHDataSetAsyncTable1");
+      st.execSQL("DROP TABLE IF EXISTS MSHDataSetAsyncTable2");
       st.execSQL("CREATE TABLE MSHDataSetAsyncTable1 (`key` INT, PRIMARY KEY(`key`))");
       st.execSQL("CREATE TABLE MSHDataSetAsyncTable2 (`key` INT, PRIMARY KEY(`key`))");
       st.execSQL("INSERT INTO MSHDataSetAsyncTable1 VALUES (1)");
@@ -111,6 +118,8 @@ namespace MySql.Data.MySqlClient.Tests
       if (st.conn.State != ConnectionState.Open)
         st.conn.Open();
 
+      st.execSQL("DROP TABLE IF EXISTS MSHReaderAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS MSHReaderAsyncSpTest");
       st.execSQL("CREATE TABLE MSHReaderAsyncTest (id int)");
       st.execSQL("CREATE PROCEDURE MSHReaderAsyncSpTest() BEGIN INSERT INTO MSHReaderAsyncTest VALUES(1); SELECT SLEEP(2); SELECT 'done'; END");
 

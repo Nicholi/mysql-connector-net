@@ -89,9 +89,6 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <!-- <Reference Include="EntityFramework">
-      <HintPath>..\..\..\..\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0-beta1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference> -->
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -109,7 +106,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -36,13 +36,14 @@ namespace MySql.Data.Tests.Stress
     public override void SetFixture(SetUpClassPerTestInit data)
     {
       base.SetFixture(data);
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
         "PRIMARY KEY(id))");
     }
 
     protected override void Dispose(bool disposing)
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       base.Dispose(disposing);
     }
 #if !CF
