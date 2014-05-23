@@ -1181,7 +1181,6 @@ namespace MySql.Data.MySqlClient.Tests
       {
           if (st.conn.State != ConnectionState.Open)
               st.conn.Open();
-          st.execSQL("DROP TABLE IF EXISTS test");
           st.execSQL("DROP TABLE IF EXISTS Test");
           st.execSQL("DROP TABLE IF EXISTS t62090");
           try

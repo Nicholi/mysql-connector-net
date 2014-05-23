@@ -40,7 +40,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     protected override void Dispose(bool disposing)
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("DROP FUNCTION IF EXISTS fnTest");
       st.conn.Dispose();

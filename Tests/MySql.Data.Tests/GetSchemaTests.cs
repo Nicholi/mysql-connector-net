@@ -39,7 +39,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP TABLE IF EXISTS test1");
       st.execSQL("DROP TABLE IF EXISTS test2");
     }
@@ -199,14 +199,14 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Columns()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL(@"CREATE TABLE test (col1 int, col2 decimal(20,5), 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL(@"CREATE TABLE Test (col1 int, col2 decimal(20,5), 
         col3 varchar(50) character set utf8, col4 tinyint unsigned, 
         col5 varchar(20) default 'boo')");
 
       string[] restrictions = new string[4];
       restrictions[1] = st.database0;
-      restrictions[2] = "test";
+      restrictions[2] = "Test";
       DataTable dt = st.conn.GetSchema("Columns", restrictions);
       Assert.Equal(5, dt.Rows.Count);
       Assert.Equal("Columns", dt.TableName);
@@ -266,10 +266,10 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void EnumAndSetColumns()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (col1 set('A','B','C'), col2 enum('A','B','C'))");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (col1 set('A','B','C'), col2 enum('A','B','C'))");
 
-      DataTable dt = st.conn.GetSchema("Columns", new string[] { null, null, "test", null });
+      DataTable dt = st.conn.GetSchema("Columns", new string[] { null, null, "Test", null });
       Assert.Equal(2, dt.Rows.Count);
       Assert.Equal("set", dt.Rows[0]["DATA_TYPE"]);
       Assert.Equal("enum", dt.Rows[1]["DATA_TYPE"]);
@@ -316,24 +316,24 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id int, PRIMARY KEY(id))");
       string[] restrictions = new string[4];
-      restrictions[2] = "test";
+      restrictions[2] = "Test";
       restrictions[1] = st.database0;
       DataTable dt = st.conn.GetSchema("Indexes", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal(true, dt.Rows[0]["PRIMARY"]);
       Assert.Equal(true, dt.Rows[0]["UNIQUE"]);
 
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id int, name varchar(50), " +
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id int, name varchar(50), " +
         "UNIQUE KEY key2 (name))");
 
       dt = st.conn.GetSchema("Indexes", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("key2", dt.Rows[0]["INDEX_NAME"]);
       Assert.Equal(false, dt.Rows[0]["PRIMARY"]);
       Assert.Equal(true, dt.Rows[0]["UNIQUE"]);
@@ -341,7 +341,7 @@ namespace MySql.Data.MySqlClient.Tests
       restrictions[3] = "key2";
       dt = st.conn.GetSchema("Indexes", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("key2", dt.Rows[0]["INDEX_NAME"]);
       Assert.Equal(false, dt.Rows[0]["PRIMARY"]);
       Assert.Equal(true, dt.Rows[0]["UNIQUE"]);
@@ -349,14 +349,14 @@ namespace MySql.Data.MySqlClient.Tests
       /// <summary> 
       /// Bug #48101	MySqlConnection.GetSchema on "Indexes" throws when there's a table named "b`a`d" 
       /// </summary> 
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL(@"CREATE TABLE `te``s``t` (id int, name varchar(50), " +
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL(@"CREATE TABLE `Te``s``t` (id int, name varchar(50), " +
         "KEY key2 (name))");
 
-      restrictions[2] = "te`s`t";
+      restrictions[2] = "Te`s`t";
       dt = st.conn.GetSchema("Indexes", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("te`s`t", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Te`s`t", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("key2", dt.Rows[0]["INDEX_NAME"]);
       Assert.Equal(false, dt.Rows[0]["PRIMARY"]);
       Assert.Equal(false, dt.Rows[0]["UNIQUE"]);
@@ -365,51 +365,51 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void IndexColumns()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id int, PRIMARY KEY(id))");
       string[] restrictions = new string[5];
-      restrictions[2] = "test";
+      restrictions[2] = "Test";
       restrictions[1] = st.database0;
       DataTable dt = st.conn.GetSchema("IndexColumns", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("id", dt.Rows[0]["COLUMN_NAME"]);
 
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id int, id1 int, id2 int, " +
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id int, id1 int, id2 int, " +
         "INDEX key1 (id1, id2))");
-      restrictions[2] = "test";
+      restrictions[2] = "Test";
       restrictions[1] = st.database0;
       restrictions[4] = "id2";
       dt = st.conn.GetSchema("IndexColumns", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("id2", dt.Rows[0]["COLUMN_NAME"]);
       Assert.Equal(2, dt.Rows[0]["ORDINAL_POSITION"]);
 
       restrictions[3] = "key1";
       dt = st.conn.GetSchema("IndexColumns", restrictions);
       Assert.Equal(1, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("id2", dt.Rows[0]["COLUMN_NAME"]);
       Assert.Equal(2, dt.Rows[0]["ORDINAL_POSITION"]);
 
       restrictions = new string[3];
       restrictions[1] = st.database0;
-      restrictions[2] = "test";
+      restrictions[2] = "Test";
       dt = st.conn.GetSchema("IndexColumns", restrictions);
       Assert.Equal(2, dt.Rows.Count);
-      Assert.Equal("test", dt.Rows[0]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[0]["TABLE_NAME"]);
       Assert.Equal("id1", dt.Rows[0]["COLUMN_NAME"]);
       Assert.Equal(1, dt.Rows[0]["ORDINAL_POSITION"]);
-      Assert.Equal("test", dt.Rows[1]["TABLE_NAME"]);
+      Assert.Equal("Test", dt.Rows[1]["TABLE_NAME"]);
       Assert.Equal("id2", dt.Rows[1]["COLUMN_NAME"]);
       Assert.Equal(2, dt.Rows[1]["ORDINAL_POSITION"]);
 
       restrictions = new string[4];
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test (id int primary key, id1 int, KEY key1 (id1))");
-      restrictions[2] = "test";
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id int primary key, id1 int, KEY key1 (id1))");
+      restrictions[2] = "Test";
       restrictions[1] = st.database0;
       restrictions[3] = "PRIMARY";
       dt = st.conn.GetSchema("IndexColumns", restrictions);

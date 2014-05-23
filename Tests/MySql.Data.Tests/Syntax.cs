@@ -530,12 +530,12 @@ namespace MySql.Data.MySqlClient.Tests
     public void NonTerminatedString()
     {
       st.execSQL("DROP TABLE IF EXISTS Test");
-      st.execSQL("CREATE TABLE Test(id INT, name1 VARCHAR(20), name2 VARCHAR(20))");
+      st.execSQL("CREATE TABLE Test (id INT, name1 VARCHAR(20), name2 VARCHAR(20))");
 
       try
       {
         MySqlCommand cmd = new MySqlCommand(
-          "INSERT INTO test VALUES (1, 'test 2010-03-04 @ 10:14, name2=' joe')", st.conn);
+          "INSERT INTO Test VALUES (1, 'test 2010-03-04 @ 10:14, name2=' joe')", st.conn);
         cmd.ExecuteNonQuery();
       }
       catch (MySqlException)
