@@ -53,6 +53,11 @@ namespace MySql.Data.MySqlClient.Tests
     {
       st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
+      try
+      {
+        st.suExecSQL("DROP USER 'simpleuser'@'%'");
+      }
+      catch (MySqlException) { }
       st.conn.Close();
     }
 

@@ -42,27 +42,29 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS test1");
+      st.execSQL("DROP TABLE IF EXISTS test2");
+      st.execSQL("DROP TABLE IF EXISTS test3");
     }
 
     [Fact]
     public void SimpleTableCaching()
     {
-      st.execSQL("DROP TABLE IF EXISTS Test");
-      st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20), name2 VARCHAR(20))");
-      st.execSQL("INSERT INTO Test VALUES (1, 'boo', 'hoo'), (2, 'first', 'last'), (3, 'fred', 'flintstone')");
+      st.execSQL("DROP TABLE IF EXISTS test1");
+      st.execSQL("CREATE TABLE test1 (id INT, name VARCHAR(20), name2 VARCHAR(20))");
+      st.execSQL("INSERT INTO test1 VALUES (1, 'boo', 'hoo'), (2, 'first', 'last'), (3, 'fred', 'flintstone')");
 
       MySqlTrace.Listeners.Clear();
       MySqlTrace.Switch.Level = SourceLevels.All;
       GenericListener listener = new GenericListener();
       MySqlTrace.Listeners.Add(listener);
 
-      string connStr = st.GetConnectionString(true) + ";logging=true;table cache=true";
+      string connStr = st.GetConnectionString(true) + ";logging=true;tablecaching=true;default table cache age=60";
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
 
-        MySqlCommand cmd = new MySqlCommand("Test", c);
+        MySqlCommand cmd = new MySqlCommand("test1", c);
         cmd.CommandType = CommandType.TableDirect;
         ConsumeReader(cmd);
         // now run the query again but this time it shouldn't generate a call to the database
@@ -75,6 +77,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ConnectionStringExpiry()
     {
+      st.execSQL("DROP TABLE IF EXISTS test3");
       st.execSQL("CREATE TABLE test3 (id INT, name VARCHAR(20), name2 VARCHAR(20))");
       st.execSQL("INSERT INTO test3 VALUES (1, 'boo', 'hoo'), (2, 'first', 'last'), (3, 'fred', 'flintstone')");
 
@@ -83,7 +86,7 @@ namespace MySql.Data.MySqlClient.Tests
       GenericListener listener = new GenericListener();
       MySqlTrace.Listeners.Add(listener);
 
-      string connStr = st.GetConnectionString(true) + ";logging=true;table cache=true;default table cache age=1";
+      string connStr = st.GetConnectionString(true) + ";logging=true;tablecaching=true;default table cache age=1";
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
@@ -111,7 +114,7 @@ namespace MySql.Data.MySqlClient.Tests
       GenericListener listener = new GenericListener();
       MySqlTrace.Listeners.Add(listener);
 
-      string connStr = st.GetConnectionString(true) + ";logging=true;table cache=true;default table cache age=1";
+      string connStr = st.GetConnectionString(true) + ";logging=true;tablecaching=true;default table cache age=1";
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();

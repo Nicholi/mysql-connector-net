@@ -288,6 +288,14 @@ namespace MySql.Data.MySqlClient.Tests
 
 #endif
 
+        protected void DropTestAccount(String fullName)
+        {
+            try
+            {
+                suExecSQL(String.Format("DROP USER {0}", fullName));
+            }
+            catch (Exception) { }
+        }
 
         protected void DropDatabase(string name)
         {
@@ -430,6 +438,8 @@ namespace MySql.Data.MySqlClient.Tests
             if (rootConn.State == ConnectionState.Closed)
                 rootConn.Open();
 
+            DropTestAccount("'test'@'localhost'");
+            DropTestAccount("'test'@'%'");
             DropDatabase(database0);
             DropDatabase(database1);
 
