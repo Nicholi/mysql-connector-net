@@ -39,7 +39,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     protected override void Dispose(bool disposing)
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       base.Dispose(disposing);
     }
 
@@ -822,12 +822,12 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BigIntUnsigned()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL(@"CREATE TABLE test(id int(10) unsigned NOT NULL, testValue bigint(20) unsigned NOT NULL,
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL(@"CREATE TABLE Test (id int(10) unsigned NOT NULL, testValue bigint(20) unsigned NOT NULL,
             PRIMARY KEY  USING BTREE (Id)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
-      st.execSQL("INSERT INTO test(Id,TestValue) VALUES(1, 3000000000)");
+      st.execSQL("INSERT INTO Test (Id,TestValue) VALUES(1, 3000000000)");
 
-      MySqlCommand cmd = new MySqlCommand("SELECT testValue FROM test WHERE id=@Id", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT testValue FROM Test WHERE id=@Id", st.conn);
       cmd.Parameters.Add("@id", MySqlDbType.UInt32);
       cmd.Prepare();
 

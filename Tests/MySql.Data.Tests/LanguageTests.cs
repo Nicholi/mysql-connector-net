@@ -38,7 +38,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     [Fact]
@@ -283,11 +283,11 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
       
-      st.execSQL("DROP TABLE IF EXISTS test_tb");
-      st.createTable(@"CREATE TABLE `test_tbl`(`test` VARCHAR(255) NOT NULL) 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.createTable(@"CREATE TABLE `Test`(`test` VARCHAR(255) NOT NULL) 
                             CHARACTER SET utf8 COLLATE utf8_swedish_ci", "MYISAM");
-      st.execSQL("INSERT INTO test_tbl VALUES ('myval')");
-      MySqlCommand cmd = new MySqlCommand("SELECT test FROM test_tbl", st.conn);
+      st.execSQL("INSERT INTO Test VALUES ('myval')");
+      MySqlCommand cmd = new MySqlCommand("SELECT test FROM Test", st.conn);
       cmd.ExecuteScalar();
     }
 

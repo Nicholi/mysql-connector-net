@@ -45,7 +45,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("DROP FUNCTION IF EXISTS fnTest");
     }

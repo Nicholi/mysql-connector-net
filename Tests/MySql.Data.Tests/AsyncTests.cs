@@ -49,10 +49,10 @@ namespace MySql.Data.MySqlClient.Tests
 
       if (st.conn.State != ConnectionState.Open)
         st.conn.Open();
-      
-      st.execSQL("CREATE TABLE test (id int)");
 
-      st.execSQL("CREATE PROCEDURE spTest() BEGIN SET @x=0; REPEAT INSERT INTO test VALUES(@x); " +
+      st.execSQL("CREATE TABLE Test (id int)");
+
+      st.execSQL("CREATE PROCEDURE spTest() BEGIN SET @x=0; REPEAT INSERT INTO Test VALUES(@x); " +
         "SET @x=@x+1; UNTIL @x = 300 END REPEAT; END");
 
       MySqlCommand proc = new MySqlCommand("spTest", st.conn);
@@ -70,7 +70,7 @@ namespace MySql.Data.MySqlClient.Tests
       Assert.True(count > 0);
 
       proc.CommandType = CommandType.Text;
-      proc.CommandText = "SELECT COUNT(*) FROM test";
+      proc.CommandText = "SELECT COUNT(*) FROM Test";
       object cnt = proc.ExecuteScalar();
       Assert.Equal(300, Convert.ToInt32(cnt));
     }

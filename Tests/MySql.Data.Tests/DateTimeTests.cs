@@ -49,7 +49,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.conn.Reader != null && !st.conn.Reader.IsClosed)
         st.conn.Reader.Close();
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP TABLE IF EXISTS t1");
     }
 

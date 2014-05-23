@@ -41,7 +41,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     [Fact]
@@ -630,7 +630,7 @@ namespace MySql.Data.MySqlClient.Tests
           IF(COLUMN_DEFAULT IS NULL, NULL, 
           IF(ASCII(COLUMN_DEFAULT) = 1 OR COLUMN_DEFAULT = '1', 1, 0))
           AS TRUE_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS
-          WHERE TABLE_SCHEMA='test' AND TABLE_NAME='test'", st.conn);
+          WHERE TABLE_SCHEMA='Test' AND TABLE_NAME='Test'", st.conn);
       DataTable dt = new DataTable();
       da.Fill(dt);
 
@@ -1219,10 +1219,10 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void DecimalPrecision()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test(a decimal(35,2), b decimal(36,2), c decimal(36,2) unsigned)");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test(a decimal(35,2), b decimal(36,2), c decimal(36,2) unsigned)");
 
-      MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         DataTable dt = reader.GetSchemaTable();
@@ -1241,9 +1241,9 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void DoubleMinValue()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test(dbl double)");
-      MySqlCommand cmd = new MySqlCommand("insert into test values(?param1)");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test(dbl double)");
+      MySqlCommand cmd = new MySqlCommand("insert into Test values(?param1)");
       cmd.Connection = st.conn;
       cmd.Parameters.Add(new MySqlParameter("?param1", MySqlDbType.Double));
       cmd.Parameters["?param1"].Value = Double.MinValue;
@@ -1251,7 +1251,7 @@ namespace MySql.Data.MySqlClient.Tests
       cmd.Parameters["?param1"].Value = Double.MaxValue;
       cmd.ExecuteNonQuery();
 
-      cmd = new MySqlCommand("SELECT * FROM test", st.conn);
+      cmd = new MySqlCommand("SELECT * FROM Test", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         reader.Read();
@@ -1269,16 +1269,16 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BigIntAutoInc()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
-      st.execSQL("CREATE TABLE test(ID bigint unsigned AUTO_INCREMENT NOT NULL PRIMARY KEY, name VARCHAR(20))");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test(ID bigint unsigned AUTO_INCREMENT NOT NULL PRIMARY KEY, name VARCHAR(20))");
 
-      MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (@id, 'boo')", st.conn);
+      MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (@id, 'boo')", st.conn);
       ulong val = UInt64.MaxValue;
       val -= 100;
       cmd.Parameters.AddWithValue("@id", val);
       cmd.ExecuteNonQuery();
 
-      cmd.CommandText = "INSERT INTO test (name) VALUES ('boo2')";
+      cmd.CommandText = "INSERT INTO Test (name) VALUES ('boo2')";
       cmd.ExecuteNonQuery();
     }
 
