@@ -330,7 +330,7 @@ namespace MySql.Web.Properties {
         /// <summary>
         ///   Looks up a localized string similar to /* Provider schema block -- version 3 */
         ///
-        ////* create our application and user tables */
+        /// /* create our application and user tables */
         ///create table my_aspnet_applications(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(256), description VARCHAR(256));
         ///create table my_aspnet_users(id INT PRIMARY KEY AUTO_INCREMENT, 
         ///		applicationId INT NOT NULL, name VARCHAR(256) NOT NULL, 
@@ -373,7 +373,7 @@ namespace MySql.Web.Properties {
         ///  primary key (SessionId,ApplicationId)
         ///)  DEFAULT CHARSET=latin1;
         ///
-        ////*
+        /// /*
         ///  Cleaning up timed ou [rest of string was truncated]&quot;;.
         /// </summary>
         public static string schema5 {

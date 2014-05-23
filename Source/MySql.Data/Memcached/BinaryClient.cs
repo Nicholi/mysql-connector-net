@@ -156,6 +156,7 @@ namespace MySql.Data.MySqlClient.Memcached
     /// <param name="key"></param>
     /// <param name="data"></param>
     /// <param name="expiration"></param>
+    /// <param name="hasExtra"></param>
     private void SendCommand( 
       byte magic, byte opcode, string key, object data, TimeSpan expiration, bool hasExtra )
     {
@@ -189,7 +190,6 @@ namespace MySql.Data.MySqlClient.Memcached
     /// <param name="magic"></param>
     /// <param name="opcode"></param>
     /// <param name="key"></param>
-    /// <param name="value"></param>
     private void SendCommand(byte magic, byte opcode, string key )
     {
       // Send data
@@ -203,8 +203,7 @@ namespace MySql.Data.MySqlClient.Memcached
     /// </summary>
     /// <param name="magic"></param>
     /// <param name="opcode"></param>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
+    /// <param name="expiration"></param>
     private void SendCommand(byte magic, byte opcode, TimeSpan expiration )
     {
       // Send data
@@ -219,7 +218,7 @@ namespace MySql.Data.MySqlClient.Memcached
     /// <param name="magic"></param>
     /// <param name="opcode"></param>
     /// <param name="key"></param>
-    /// <param name="value"></param>
+    /// <param name="amount"></param>
     private void SendCommand(byte magic, byte opcode, string key, int amount )
     {
       // Send data
@@ -255,7 +254,7 @@ namespace MySql.Data.MySqlClient.Memcached
     /// <param name="data"></param>
     /// <param name="expiration"></param>
     /// <param name="hasExtra">If true applies to set, add or replace commands; if false applies
-    /// to append & prepend commands.</param>
+    /// to append &amp; prepend commands.</param>
     /// <returns></returns>
     private byte[] EncodeStoreCommand(
       byte magic, byte opcode, string key, object data, TimeSpan expiration, 

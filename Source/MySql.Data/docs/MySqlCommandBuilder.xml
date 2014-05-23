@@ -23,7 +23,7 @@
         To generate INSERT, UPDATE, or DELETE statements, the <B>MySqlCommandBuilder</B> uses the
         <B>SelectCommand</B> property to retrieve a required set of metadata automatically. If you change
         the <B>SelectCommand</B> after the metadata has is retrieved (for example, after the first update), you
-        should call the <see cref="RefreshSchema"/> method to update the metadata.
+        should call the <see cref="System.Data.Common.DbCommandBuilder.RefreshSchema"/> method to update the metadata.
       </para>
 
       <para>
@@ -230,7 +230,7 @@
       </para>
       <para>
         After the SQL statement is first generated, the application must explicitly
-        call <see cref="RefreshSchema"/> if it changes the statement in any way.
+        call <see cref="System.Data.Common.DbCommandBuilder.RefreshSchema"/> if it changes the statement in any way.
         Otherwise, the <B>GetDeleteCommand</B> will be still be using information
         from the previous statement, which might not be correct. The SQL statements
         are first generated either when the application calls
@@ -261,7 +261,7 @@
       </para>
       <para>
         After the SQL statement is first generated, the application must explicitly
-        call <see cref="RefreshSchema"/> if it changes the statement in any way.
+        call <see cref="System.Data.Common.DbCommandBuilder.RefreshSchema"/> if it changes the statement in any way.
         Otherwise, the <B>GetInsertCommand</B> will be still be using information
         from the previous statement, which might not be correct. The SQL statements
         are first generated either when the application calls
@@ -292,7 +292,7 @@
       </para>
       <para>
         After the SQL statement is first generated, the application must explicitly
-        call <see cref="RefreshSchema"/> if it changes the statement in any way.
+        call <see cref="System.Data.Common.DbCommandBuilder.RefreshSchema"/> if it changes the statement in any way.
         Otherwise, the <B>GetUpdateCommand</B> will be still be using information
         from the previous statement, which might not be correct. The SQL statements
         are first generated either when the application calls

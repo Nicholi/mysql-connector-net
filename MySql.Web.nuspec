@@ -15,4 +15,7 @@
       <dependency id="MySql.Data" version="6.8.3" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="Source\MySql.Web\bin\v4.5.1\Release\MySql.Web.dll" target="lib\net45\MySql.Web.dll" /> 
+  </files>
 </package>

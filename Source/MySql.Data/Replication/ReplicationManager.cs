@@ -29,7 +29,7 @@ using System.Text;
 namespace MySql.Data.MySqlClient.Replication
 {
   /// <summary>
-  /// Manager for Replication & Load Balancing features
+  /// Manager for Replication &amp; Load Balancing features
   /// </summary>
   public static class ReplicationManager
   {
