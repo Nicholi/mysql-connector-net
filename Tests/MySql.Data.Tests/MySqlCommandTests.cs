@@ -42,7 +42,7 @@ namespace MySql.Data.MySqlClient.Tests
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       try
       {
-        st.execSQL("DROP USER 'tester2'@'%'");
+        st.suExecSQL("DROP USER 'tester2'@'%'");
       }
       catch (MySqlException) { }
       base.Dispose( disposing );

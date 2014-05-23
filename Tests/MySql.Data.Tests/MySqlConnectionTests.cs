@@ -1195,6 +1195,26 @@ namespace MySql.Data.MySqlClient.Tests
           catch (MySqlException) { }
           try
           {
+              st.suExecSQL("DROP USER 'nopass'@'localhost'");
+          }
+          catch (MySqlException) { }
+          try
+          {
+              st.suExecSQL("DROP USER 'nopass'@'%'");
+          }
+          catch (MySqlException) { }
+          try
+          {
+              st.suExecSQL("DROP USER 'quotedUser'@'localhost'");
+          }
+          catch (MySqlException) { }
+          try
+          {
+              st.suExecSQL("DROP USER 'quotedUser'@'%'");
+          }
+          catch (MySqlException) { }
+          try
+          {
               if (st.Version.Major < 5)
                   st.suExecSQL("REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'test'");
               else
