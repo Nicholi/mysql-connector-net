@@ -40,7 +40,10 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS table1");
+      st.execSQL("DROP TABLE IF EXISTS table2");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
     }
 
     /// <summary>
@@ -49,12 +52,13 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void EscapeStringMethodCanEscapeQuotationMark()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
 
-      MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1,\"firstname\")", st.conn);
+      MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (1,\"firstname\")", st.conn);
       cmd.ExecuteNonQuery();
 
-      cmd = new MySqlCommand("UPDATE test SET name = \"" + MySqlHelper.EscapeString("test\"name\"") + "\";", st.conn);
+      cmd = new MySqlCommand("UPDATE Test SET name = \"" + MySqlHelper.EscapeString("test\"name\"") + "\";", st.conn);
       cmd.ExecuteNonQuery();
 
       cmd.CommandText = "SELECT name FROM Test WHERE id=1";
@@ -70,15 +74,17 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
-      st.execSQL("CREATE TABLE test (id int)");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
+      st.execSQL("CREATE TABLE Test (id int)");
 
-      st.execSQL("CREATE PROCEDURE spTest() BEGIN SET @x=0; REPEAT INSERT INTO test VALUES(@x); " +
+      st.execSQL("CREATE PROCEDURE spTest() BEGIN SET @x=0; REPEAT INSERT INTO Test VALUES(@x); " +
         "SET @x=@x+1; UNTIL @x = 100 END REPEAT; END");
 
       System.Threading.Tasks.Task<int> result = MySqlHelper.ExecuteNonQueryAsync(st.conn, "call spTest", null);
       Assert.NotEqual(-1, result.Result);
 
-      MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM test;", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM Test;", st.conn);
       cmd.CommandType = System.Data.CommandType.Text;
       object cnt = cmd.ExecuteScalar();
       Assert.Equal(100, Convert.ToInt32(cnt));
@@ -86,6 +92,8 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ExecuteDataSetAsync()
     {
+      st.execSQL("DROP TABLE IF EXISTS table1");
+      st.execSQL("DROP TABLE IF EXISTS table2");
       st.execSQL("CREATE TABLE table1 (`key` INT, PRIMARY KEY(`key`))");
       st.execSQL("CREATE TABLE table2 (`key` INT, PRIMARY KEY(`key`))");
       st.execSQL("INSERT INTO table1 VALUES (1)");
@@ -108,8 +116,10 @@ namespace MySql.Data.MySqlClient.Tests
       if (st.conn.State != ConnectionState.Open)
         st.conn.Open();
 
-      st.execSQL("CREATE TABLE test (id int)");
-      st.execSQL("CREATE PROCEDURE spTest() BEGIN INSERT INTO test VALUES(1); " +
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
+      st.execSQL("CREATE TABLE Test (id int)");
+      st.execSQL("CREATE PROCEDURE spTest() BEGIN INSERT INTO Test VALUES(1); " +
                  "SELECT SLEEP(2); SELECT 'done'; END");
 
       using (MySqlDataReader reader = MySqlHelper.ExecuteReaderAsync(st.conn, "call sptest").Result)
@@ -121,7 +131,7 @@ namespace MySql.Data.MySqlClient.Tests
         Assert.Equal("done", reader.GetString(0));
         reader.Close();
 
-        MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM test", st.conn);
+        MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM Test", st.conn);
         cmd.CommandType = CommandType.Text;
         object cnt = cmd.ExecuteScalar();
         Assert.Equal(1, Convert.ToInt32(cnt));

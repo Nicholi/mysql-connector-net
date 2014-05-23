@@ -35,6 +35,7 @@ namespace MySql.Data.MySqlClient.Tests
     public void SetFixture(SetUpClass data)
     {
       st = data;
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100))");
     }
 

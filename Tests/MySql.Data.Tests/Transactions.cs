@@ -290,13 +290,13 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c = new MySqlConnection(connStr);
         c.Open();
-        MySqlCommand cmd = new MySqlCommand("LOCK TABLES test WRITE;", c);
+        MySqlCommand cmd = new MySqlCommand("LOCK TABLES Test WRITE;", c);
         cmd.ExecuteNonQuery();
         cmd = new MySqlCommand("INSERT INTO Test VALUES ('a', 'name', 'name2')", c);
         cmd.ExecuteNonQuery();
         st.execSQL("UNLOCK TABLES");
       }
-      MySqlCommand cmd2 = new MySqlCommand("LOCK TABLES test READ; SELECT COUNT(*) FROM test", c);
+      MySqlCommand cmd2 = new MySqlCommand("LOCK TABLES Test READ; SELECT COUNT(*) FROM Test", c);
       Assert.Equal(1, Convert.ToInt32(cmd2.ExecuteScalar()));
       st.execSQL("UNLOCK TABLES");
       c.Dispose();
@@ -623,7 +623,7 @@ namespace MySql.Data.MySqlClient.Tests
         {
         }
       }
-      long count = (long)MySqlHelper.ExecuteScalar(connStr, "select count(*) from test");
+      long count = (long)MySqlHelper.ExecuteScalar(connStr, "select count(*) from Test");
       Assert.Equal(0, count);
     }
 

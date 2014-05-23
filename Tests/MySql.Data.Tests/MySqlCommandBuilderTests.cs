@@ -41,6 +41,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void MultiWord()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
 
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
@@ -69,6 +70,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void LastOneWins()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test (id, name) VALUES (1, 'Test')");
 
@@ -94,6 +96,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void NotLastOneWins()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test (id, name) VALUES (1, 'Test')");
 
@@ -122,6 +125,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void UsingFunctions()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test (id, name) VALUES (1,'test1')");
       st.execSQL("INSERT INTO Test (id, name) VALUES (2,'test2')");
@@ -165,6 +169,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test (id, name) VALUES (1,'test1')");
       st.execSQL("INSERT INTO Test (id, name) VALUES (2,'test2')");
@@ -194,6 +199,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void SpecialCharactersInFieldNames()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (`col%1` int PRIMARY KEY, `col()2` int, `col<>3` int, `col/4` int)");
 
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
@@ -216,6 +222,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void SemicolonAtEndOfSQL()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), PRIMARY KEY(id))");
       st.execSQL("INSERT INTO Test VALUES(1, 'Data')");
 
@@ -242,6 +249,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void AutoIncrementColumnsOnInsert()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT UNSIGNED NOT NULL AUTO_INCREMENT, " +
           "name VARCHAR(100), PRIMARY KEY(id))");
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
@@ -277,6 +285,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void AutoIncrementColumnsOnInsert2()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT UNSIGNED NOT NULL " +
           "AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20))");
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
@@ -311,6 +320,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void MultiUpdate()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
       st.execSQL("INSERT INTO  Test (id, name) VALUES (1, 'test1')");
       st.execSQL("INSERT INTO  Test (id, name) VALUES (2, 'test2')");
@@ -348,6 +358,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void UpdatingWithDateInKey()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (cod INT, dt DATE, PRIMARY KEY(cod, dt))");
 
       st.execSQL("INSERT INTO Test (cod, dt) VALUES (1, '2006-1-1')");
@@ -388,7 +399,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");    
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
   }
 }

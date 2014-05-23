@@ -45,12 +45,16 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");      
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP TABLE IF EXISTS extable_1");
+      st.execSQL("DROP TABLE IF EXISTS extable_2");
+      st.execSQL("DROP TABLE IF EXISTS bug54152");
     }
 
     [Fact]
     public void ShowCreateTable()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       MySqlDataAdapter da = new MySqlDataAdapter("SHOW CREATE TABLE Test", st.conn);
       DataTable dt = new DataTable();
@@ -65,6 +69,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), mt MEDIUMTEXT, " +
             "PRIMARY KEY(id)) CHAR SET utf8");
 
@@ -93,6 +98,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ProblemCharsInSQL()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), mt MEDIUMTEXT, " +
             "PRIMARY KEY(id))");
 
@@ -115,6 +121,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void LoadDataLocalInfile()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       string connString = st.conn.ConnectionString + ";pooling=false";
       MySqlConnection c = new MySqlConnection(connString);
@@ -164,7 +171,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Bug6135()
     {
-      string sql = @"CREATE TABLE `KLANT` (`KlantNummer` int(11) NOT NULL auto_increment, 
+      string sql = @"CREATE TABLE `Test` (`KlantNummer` int(11) NOT NULL auto_increment, 
         `Username` varchar(50) NOT NULL default '', `Password` varchar(100) NOT NULL default '', 
         `Naam` varchar(100) NOT NULL default '', `Voornaam` varchar(100) NOT NULL default '',
         `Straat` varchar(100) NOT NULL default '', `StraatNr` varchar(10) NOT NULL default '',
@@ -174,9 +181,10 @@ namespace MySql.Data.MySqlClient.Tests
         `LastVisit` timestamp NOT NULL, `Categorie` int(11) NOT NULL default '0',
         PRIMARY KEY  (`KlantNummer`),	UNIQUE KEY `UniqueUsername` (`Username`),
         UNIQUE KEY `UniqueDefaultMail` (`DefaultMail`)	)";
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.createTable(sql, "MyISAM");
 
-      MySqlCommand cmd = new MySqlCommand("SELECT * FROM KLANT", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         while (reader.Read()) { }
@@ -186,6 +194,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Sum()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (field1 mediumint(9) default '0', field2 float(9,3) " +
         "default '0.000', field3 double(15,3) default '0.000') engine=innodb ");
       st.execSQL("INSERT INTO Test values (1,1,1)");
@@ -202,6 +211,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Sum2()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, count int)");
       st.execSQL("INSERT INTO Test VALUES (1, 21)");
       st.execSQL("INSERT INTO Test VALUES (1, 33)");
@@ -222,6 +232,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       MySqlCommand cmd = new MySqlCommand(
         "SELECT * FROM Test; DROP TABLE IF EXISTS test2; SELECT * FROM Test", st.conn);
@@ -234,6 +245,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void SettingAutoIncrementColumns()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int auto_increment, name varchar(100), primary key(id))");
       st.execSQL("INSERT INTO Test VALUES (1, 'One')");
       st.execSQL("INSERT INTO Test VALUES (3, 'Two')");
@@ -262,6 +274,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void FoundRows()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
           "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (NULL, 'test')", st.conn);
@@ -277,6 +290,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void AutoIncrement()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
           "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (NULL, 'test')", st.conn);
@@ -296,6 +310,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void CommentSymbolInTableName()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (`PO#` int(11) NOT NULL auto_increment, " +
         "`PODate` date default NULL, PRIMARY KEY  (`PO#`))");
       st.execSQL("INSERT INTO Test ( `PO#`, `PODate` ) " +
@@ -334,6 +349,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Describe()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       MySqlDataAdapter da = new MySqlDataAdapter("DESCRIBE Test", st.conn);
       DataTable dt = new DataTable();
@@ -350,6 +366,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ShowTableStatus()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
       MySqlDataAdapter da = new MySqlDataAdapter(
         String.Format("SHOW TABLE STATUS FROM `{0}` LIKE 'Test'",
@@ -475,13 +492,14 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TokenizerBatching()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, expr INT,name VARCHAR(20), PRIMARY KEY(id))");
 
 
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test",
         st.conn);
       MySqlCommand ins = new MySqlCommand(
-        "INSERT INTO test (id, expr, name) VALUES(?p1, (?p2 * 2) + 3, ?p3)",
+        "INSERT INTO Test (id, expr, name) VALUES(?p1, (?p2 * 2) + 3, ?p3)",
         st.conn);
       da.InsertCommand = ins;
       ins.UpdatedRowSource = UpdateRowSource.None;
@@ -531,7 +549,8 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void QueryNormalizerCrash1()
     {
-
+      st.execSQL("DROP TABLE IF EXISTS extable_1");
+      st.execSQL("DROP TABLE IF EXISTS extable_2");
       st.execSQL(
         "CREATE TABLE  extable_1 (x_coord int, y_coord int, z_coord int," +
         "edge_id int, life_id int)");
@@ -560,6 +579,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void QueryNormalizerCrash2()
     {
+      st.execSQL("DROP TABLE IF EXISTS bug54152");
       st.execSQL("CREATE TABLE bug54152 (id INT, expr INT,name VARCHAR(20)," +
         "fld4 VARCHAR(10), fld5 VARCHAR(10), fld6 VARCHAR(10)," +
         "fld7 VARCHAR(10), fld8 VARCHAR(10), fld9 VARCHAR(10)," +

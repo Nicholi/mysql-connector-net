@@ -37,12 +37,13 @@ namespace MySql.Data.MySqlClient.Tests
     public void SetFixture(SetUpClass data)
     {
       st = data;
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, ts TIMESTAMP, PRIMARY KEY(id))");
     }
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");  
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     [Fact]

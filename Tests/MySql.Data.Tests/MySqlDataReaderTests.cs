@@ -42,11 +42,12 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     private void CreateDefaultTable()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, b1 LONGBLOB, PRIMARY KEY(id))");
     }
 
@@ -171,15 +172,16 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void GetSchema()
     {
-      string sql = @"CREATE TABLE test2(id INT UNSIGNED AUTO_INCREMENT 
+      string sql = @"CREATE TABLE Test (id INT UNSIGNED AUTO_INCREMENT 
         NOT NULL, name VARCHAR(255) NOT NULL, name2 VARCHAR(40), fl FLOAT, 
         dt DATETIME, `udec` DECIMAL(20,6) unsigned,
         `dec` DECIMAL(44,3), bt boolean, PRIMARY KEY(id))";
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(sql);
-      st.execSQL("INSERT INTO test2 VALUES(1,'Test', 'Test', 1.0, now(), 20.0, 12.324, True)");
+      st.execSQL("INSERT INTO Test VALUES(1,'Test', 'Test', 1.0, now(), 20.0, 12.324, True)");
 
-      MySqlCommand cmd = new MySqlCommand("SELECT * FROM test2", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         DataTable dt = reader.GetSchemaTable();
@@ -377,6 +379,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ReadingTextFields()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, t1 TEXT)");
       st.execSQL("INSERT INTO Test VALUES (1, 'Text value')");
 
@@ -613,6 +616,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void InvalidTimestamp()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (tm TIMESTAMP)");
       st.execSQL("INSERT INTO Test VALUES (NULL)");
 
@@ -628,6 +632,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void GetStringOnNull()
     {
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("CREATE TABLE Test (id int, PRIMARY KEY(id))");
         MySqlCommand cmd = new MySqlCommand(
         String.Format("SHOW INDEX FROM Test FROM `{0}`", st.database0), st.conn);
@@ -689,6 +694,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ConstraintWithLoadingReader()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(@"CREATE TABLE Test (ID_A int(11) NOT NULL,
         ID_B int(11) NOT NULL, PRIMARY KEY (ID_A,ID_B)
         ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");

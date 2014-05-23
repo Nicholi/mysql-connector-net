@@ -151,7 +151,7 @@ namespace MySql.Data.MySqlClient.Tests
       //catch (MySqlException ex)
       //{
         TimeSpan ts = DateTime.Now.Subtract(start);
-        Assert.True(ts.TotalSeconds <= 3);
+        Assert.True(ts.TotalSeconds <= 4);
         Assert.True(ex.Message.StartsWith("Timeout expired", StringComparison.OrdinalIgnoreCase), "Message is wrong " + ex.Message);
       //}
 
@@ -185,15 +185,17 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL(@"CREATE PROCEDURE spTest(duration INT) 
         BEGIN 
           SELECT SLEEP(duration);
         END");
 
-      st.execSQL("CREATE TABLE test (id INT)");
+      st.execSQL("CREATE TABLE Test (id INT)");
 
       MySqlCommand cmd = new MySqlCommand(
-        "call spTest(5);INSERT INTO test VALUES(4)", st.conn);
+        "call spTest(5);INSERT INTO Test VALUES(4)", st.conn);
       cmd.CommandTimeout = 2;
       //try
       //{

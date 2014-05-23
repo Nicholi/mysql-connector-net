@@ -51,7 +51,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.conn.Close();
     }
@@ -86,6 +86,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("CREATE TABLE Test(id INT, name VARCHAR(20))");
       st.execSQL(@"CREATE PROCEDURE spTest(IN value INT) 
         BEGIN INSERT INTO Test VALUES(value, 'Test'); END");
@@ -432,6 +434,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20))");
       st.execSQL("CREATE PROCEDURE spTest(id int, str VARCHAR(45)) " +
            "BEGIN INSERT INTO Test VALUES(id, str); END");
@@ -480,6 +484,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("CREATE TABLE Test (id integer(9), state varchar(2))");
       st.execSQL("CREATE PROCEDURE spTest(IN p1 integer(9), IN p2 varchar(2)) " +
         "BEGIN " +
@@ -632,6 +638,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("CREATE TABLE Test(str VARCHAR(50), e ENUM ('P','R','F','E'), i INT(6))");
       st.execSQL("CREATE PROCEDURE spTest(IN p_enum ENUM('P','R','F','E')) BEGIN " +
         "INSERT INTO Test (str, e, i) VALUES (null, p_enum, 55);  END");
@@ -661,6 +669,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM Test; END");
       st.execSQL(@"CREATE TABLE Test(id INT AUTO_INCREMENT, name VARCHAR(20), PRIMARY KEY (id)) ");
 
@@ -706,6 +716,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
       st.execSQL(@"CREATE TABLE Test(f1 bigint(20) unsigned NOT NULL,
             PRIMARY KEY(f1)) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 

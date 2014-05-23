@@ -41,11 +41,10 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      //st.execSQL("DROP TABLE IF EXISTS bug52187a");
-      //st.execSQL("DROP TABLE IF EXISTS bug52187b");
-      //st.execSQL("DROP TABLE IF EXISTS bug52187a");
-      //st.execSQL("DROP TABLE IF EXISTS bug52187b");
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS bug52187a");
+      st.execSQL("DROP TABLE IF EXISTS bug52187b");
+      st.execSQL("DROP TABLE IF EXISTS t62090");
+      st.execSQL("DROP TABLE IF EXISTS t62091");
     }
 
 #if !CF
@@ -72,9 +71,9 @@ namespace MySql.Data.MySqlClient.Tests
       Thread.CurrentThread.CurrentCulture = c;
       Thread.CurrentThread.CurrentUICulture = c;
 
-      st.execSQL("CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
+      st.execSQL("CREATE TABLE t62090 (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
 
-      MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?fl, ?db, ?dec)", st.conn);
+      MySqlCommand cmd = new MySqlCommand("INSERT INTO t62090 VALUES (?fl, ?db, ?dec)", st.conn);
       cmd.Parameters.Add("?fl", MySqlDbType.Float);
       cmd.Parameters.Add("?db", MySqlDbType.Double);
       cmd.Parameters.Add("?dec", MySqlDbType.Decimal);
@@ -88,7 +87,7 @@ namespace MySql.Data.MySqlClient.Tests
 
       try
       {
-        cmd.CommandText = "SELECT * FROM Test";
+        cmd.CommandText = "SELECT * FROM t62090";
         if (prepared) cmd.Prepare();
         using (MySqlDataReader reader = cmd.ExecuteReader())
         {
@@ -132,8 +131,8 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void ArabicCalendars()
     {
-      st.execSQL("CREATE TABLE test(dt DATETIME)");
-      st.execSQL("INSERT INTO test VALUES ('2007-01-01 12:30:45')");
+      st.execSQL("CREATE TABLE t62091 (dt DATETIME)");
+      st.execSQL("INSERT INTO t62091 VALUES ('2007-01-01 12:30:45')");
 
       CultureInfo curCulture = Thread.CurrentThread.CurrentCulture;
       CultureInfo curUICulture = Thread.CurrentThread.CurrentUICulture;
@@ -141,7 +140,7 @@ namespace MySql.Data.MySqlClient.Tests
       Thread.CurrentThread.CurrentCulture = c;
       Thread.CurrentThread.CurrentUICulture = c;
 
-      MySqlCommand cmd = new MySqlCommand("SELECT dt FROM test", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT dt FROM t62091", st.conn);
       DateTime dt = (DateTime)cmd.ExecuteScalar();
       Assert.Equal(2007, dt.Year);
       Assert.Equal(1, dt.Month);

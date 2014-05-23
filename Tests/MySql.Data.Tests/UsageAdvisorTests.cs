@@ -41,12 +41,13 @@ namespace MySql.Data.MySqlClient.Tests
         st.conn.Close();
       st.conn.ConnectionString += st.csAdditions;
       st.conn.Open();
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.createTable("CREATE TABLE Test (id int, name VARCHAR(200))", "INNODB");
     }
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     [Fact]

@@ -18,7 +18,7 @@ namespace MySql.Data.MySqlClient.Tests.Xunit
  public class MySqlMediumTrustTests : MarshalByRefObject
   {   
    
-    [Fact]
+    [Fact(Skip = "Localhost conn")]
     public void TestConnectionStrings()
     {      
       MySqlConnection c = new MySqlConnection();

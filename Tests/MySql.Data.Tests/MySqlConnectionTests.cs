@@ -543,13 +543,13 @@ namespace MySql.Data.MySqlClient.Tests
               c.Open();
 
               MySqlCommand cmd = new MySqlCommand(
-                  "CREATE TABLE test (id varbinary(16), active bit) CHARACTER SET utf8", st.conn);
+                  "CREATE TABLE t62090 (id varbinary(16), active bit) CHARACTER SET utf8", st.conn);
               cmd.ExecuteNonQuery();
-              cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x1234567890 AS Binary), true)";
+              cmd.CommandText = "INSERT INTO t62090 (id, active) VALUES (CAST(0x1234567890 AS Binary), true)";
               cmd.ExecuteNonQuery();
-              cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789a AS Binary), true)";
+              cmd.CommandText = "INSERT INTO t62090 (id, active) VALUES (CAST(0x123456789a AS Binary), true)";
               cmd.ExecuteNonQuery();
-              cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789b AS Binary), true)";
+              cmd.CommandText = "INSERT INTO t62090 (id, active) VALUES (CAST(0x123456789b AS Binary), true)";
               cmd.ExecuteNonQuery();
           }
 
@@ -557,7 +557,7 @@ namespace MySql.Data.MySqlClient.Tests
           {
               d.Open();
 
-              MySqlCommand cmd2 = new MySqlCommand("SELECT id, active FROM test", d);
+              MySqlCommand cmd2 = new MySqlCommand("SELECT id, active FROM t62090", d);
               using (MySqlDataReader reader = cmd2.ExecuteReader())
               {
                   Assert.True(reader.Read());
@@ -1067,7 +1067,7 @@ namespace MySql.Data.MySqlClient.Tests
       public void PasswordExpiration()
       {
           const string expireduser = "expireduser";
-          const string expiredhost = "localhost";
+          const string expiredhost = "%";
           string expiredfull = string.Format("'{0}'@'{1}'", expireduser, expiredhost);
 
           using (MySqlConnection conn = new MySqlConnection(st.GetConnectionString(st.rootUser, st.rootPassword, true)))
@@ -1140,25 +1140,25 @@ namespace MySql.Data.MySqlClient.Tests
               //return;
           }
           // create user
-          cmd.CommandText = "select count( * ) from mysql.user where user = 'myoldpassuser' and host = 'localhost'";
+          cmd.CommandText = "select count( * ) from mysql.user where user = 'myoldpassuser' and host = '%'";
           cmd.Connection = st.rootConn;
           int n = Convert.ToInt32(cmd.ExecuteScalar());
           if (n != 0)
           {
-              st.ExecuteSQLAsRoot("drop user 'myoldpassuser'@'localhost'");
+              st.ExecuteSQLAsRoot("drop user 'myoldpassuser'@'%'");
           }
           // user with old password is different depending upon the version.
           if (st.Version.Minor >= 6)
           {
-              st.ExecuteSQLAsRoot("create user 'myoldpassuser'@'localhost' IDENTIFIED with 'mysql_old_password'");
+              st.ExecuteSQLAsRoot("create user 'myoldpassuser'@'%' IDENTIFIED with 'mysql_old_password'");
           }
           else
           {
-              st.ExecuteSQLAsRoot("create user 'myoldpassuser'@'localhost' ");
+              st.ExecuteSQLAsRoot("create user 'myoldpassuser'@'%' ");
           }
           // setup user with old password, attempt to open connection with it, must fail
-          st.ExecuteSQLAsRoot(string.Format("grant all on `{0}`.* to 'myoldpassuser'@'localhost'", db));
-          st.ExecuteSQLAsRoot("set password for 'myoldpassuser'@'localhost' = old_password( '123' )");
+          st.ExecuteSQLAsRoot(string.Format("grant all on `{0}`.* to 'myoldpassuser'@'%'", db));
+          st.ExecuteSQLAsRoot("set password for 'myoldpassuser'@'%' = old_password( '123' )");
           //con.Settings.UserID = "myoldpassuser";
           //con.Settings.Password = "123";
           csb.UserID = "myoldpassuser";
@@ -1173,7 +1173,7 @@ namespace MySql.Data.MySqlClient.Tests
           {
               st.ExecuteSQLAsRoot("set old_passwords=0;");
           }
-          st.ExecuteSQLAsRoot("drop user 'myoldpassuser'@'localhost'");
+          st.ExecuteSQLAsRoot("drop user 'myoldpassuser'@'%'");
 
       }
 
@@ -1181,6 +1181,19 @@ namespace MySql.Data.MySqlClient.Tests
       {
           if (st.conn.State != ConnectionState.Open)
               st.conn.Open();
+          st.execSQL("DROP TABLE IF EXISTS test");
+          st.execSQL("DROP TABLE IF EXISTS Test");
+          st.execSQL("DROP TABLE IF EXISTS t62090");
+          try
+          {
+              st.suExecSQL("DROP USER 'expireduser'@'%'");
+          }
+          catch (MySqlException) { }
+          try
+          {
+              st.suExecSQL("DROP USER 'myoldpassuser'@'%'");
+          }
+          catch (MySqlException) { }
           try
           {
               if (st.Version.Major < 5)
@@ -1211,6 +1224,7 @@ namespace MySql.Data.MySqlClient.Tests
       [Fact]
       public void TransactionAsync()
       {
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("Create Table Test(key2 varchar(50), name varchar(50), name2 varchar(50))");
         st.execSQL("INSERT INTO Test VALUES('P', 'Test1', 'Test2')");
 
@@ -1242,6 +1256,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         if (st.Version < new Version(4, 1)) return;
 
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
         st.execSQL("INSERT INTO Test (id, name) VALUES (1,'test1')");
         st.execSQL("INSERT INTO Test (id, name) VALUES (2,'test2')");

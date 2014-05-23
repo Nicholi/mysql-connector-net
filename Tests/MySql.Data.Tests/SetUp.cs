@@ -205,7 +205,7 @@ namespace MySql.Data.MySqlClient.Tests
         {
             if( OnGetConnectionStringInfo != null )
                 return OnGetConnectionStringInfo();
-            return String.Format(";protocol=sockets;port={0};", port);
+            return String.Format(";protocol=socket;port={0};", port);
         }
 
         public delegate string GetConnectionStringInfoCallback();
@@ -479,7 +479,7 @@ namespace MySql.Data.MySqlClient.Tests
     /// <returns></returns>
     protected virtual string OnGetConnectionStringInfo()
     {
-      return "protocol=sockets;";
+      return "protocol=socket;";
     }
 
     public void Dispose()

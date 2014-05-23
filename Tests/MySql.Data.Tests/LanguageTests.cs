@@ -46,6 +46,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (u2 varchar(255) CHARACTER SET ucs2)");
 
       using (MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=utf8"))
@@ -86,6 +87,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET utf8)");
 
       using (MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=utf8"))
@@ -144,6 +146,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (name VARCHAR(200) CHAR SET utf8)");
 
       using (MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=utf8"))
@@ -210,6 +213,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c.Open();
 
+        st.execSQL("DROP TABLE IF EXISTS Test");
         st.execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET big5, name2 VARCHAR(200) CHAR SET gb2312)");
 
         MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, '困巫忘否役', '涝搞谷侪魍' )", c);
@@ -230,6 +234,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET latin5 )");
 
       using (MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=utf8"))
@@ -254,6 +259,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET cp1251)");
 
       using (MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=utf8"))
@@ -291,6 +297,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void UTF8Parameters()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE test (id int(11) NOT NULL, " +
           "value varchar(100) NOT NULL, PRIMARY KEY (id)) " +
           "ENGINE=MyISAM DEFAULT CHARSET=utf8");

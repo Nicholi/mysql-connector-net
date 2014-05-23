@@ -40,11 +40,11 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void UseFunctions()
     {
-      st.execSQL("CREATE TABLE Test (valid char, UserCode varchar(100), password varchar(100)) CHARSET latin1");
+      st.execSQL("CREATE TABLE t62093 (valid char, UserCode varchar(100), password varchar(100)) CHARSET latin1");
 
       MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=latin1");
       c.Open();
-      MySqlCommand cmd = new MySqlCommand("SELECT valid FROM Test WHERE Valid = 'Y' AND " +
+      MySqlCommand cmd = new MySqlCommand("SELECT valid FROM t62093 WHERE Valid = 'Y' AND " +
         "UserCode = 'username' AND Password = AES_ENCRYPT('Password','abc')", c);
       cmd.ExecuteScalar();
       c.Close();
@@ -55,10 +55,10 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
-      st.createTable("CREATE TABLE test (id int, name varchar(200) collate utf8_bin) charset utf8", "InnoDB");
-      st.execSQL("INSERT INTO test VALUES (1, 'Test1')");
+      st.createTable("CREATE TABLE t62092 (id int, name varchar(200) collate utf8_bin) charset utf8", "InnoDB");
+      st.execSQL("INSERT INTO t62092 VALUES (1, 'Test1')");
 
-      MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT * FROM t62092", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         Assert.True(reader.Read());
@@ -72,13 +72,13 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(4, 1)) return;
 
-      st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(200)) CHARSET latin1");
-      st.execSQL("INSERT INTO Test VALUES( 1, _latin1 'Test')");
+      st.execSQL("CREATE TABLE t62091 (id INT, name VARCHAR(200)) CHARSET latin1");
+      st.execSQL("INSERT INTO t62091 VALUES( 1, _latin1 'Test')");
 
       MySqlConnection c = new MySqlConnection(st.conn.ConnectionString + ";charset=latin1");
       c.Open();
 
-      MySqlCommand cmd = new MySqlCommand("SELECT id FROM Test WHERE name LIKE 'Test'", c);
+      MySqlCommand cmd = new MySqlCommand("SELECT id FROM t62091 WHERE name LIKE 'Test'", c);
       object id = cmd.ExecuteScalar();
       Assert.Equal(1, id);
       c.Close();
@@ -93,11 +93,11 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version.Major >= 6) return;
 
-      st.execSQL("CREATE TABLE Test(name VARCHAR(40) NOT NULL, name2 VARCHAR(20)) " +
+      st.execSQL("CREATE TABLE t62090(name VARCHAR(40) NOT NULL, name2 VARCHAR(20)) " +
         "CHARACTER SET utf8");
-      st.execSQL("INSERT INTO Test VALUES('Test', 'Test')");
+      st.execSQL("INSERT INTO t62090 VALUES('Test', 'Test')");
 
-      MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", st.conn);
+      MySqlCommand cmd = new MySqlCommand("SELECT * FROM t62090", st.conn);
       using (MySqlDataReader reader = cmd.ExecuteReader())
       {
         DataTable dt = reader.GetSchemaTable();
@@ -109,10 +109,10 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void UTF8BlogsTruncating()
     {
-      st.execSQL("CREATE TABLE test (name LONGTEXT) CHARSET utf8");
+      st.execSQL("CREATE TABLE t62089 (name LONGTEXT) CHARSET utf8");
 
       string szParam = "test:éàçùêû";
-      string szSQL = "INSERT INTO test Values (?monParametre)";
+      string szSQL = "INSERT INTO t62089 Values (?monParametre)";
 
       string connStr = st.GetConnectionString(true) + ";charset=utf8";
       using (MySqlConnection c = new MySqlConnection(connStr))
@@ -123,7 +123,7 @@ namespace MySql.Data.MySqlClient.Tests
         cmd.Parameters[0].Value = szParam;
         cmd.ExecuteNonQuery();
 
-        cmd.CommandText = "SELECT * FROM test";
+        cmd.CommandText = "SELECT * FROM t62089";
         using (MySqlDataReader reader = cmd.ExecuteReader())
         {
           reader.Read();
@@ -136,7 +136,7 @@ namespace MySql.Data.MySqlClient.Tests
    [Fact]
     public void BlobAsUtf8()
     {
-      st.execSQL(@"CREATE TABLE Test(include_blob BLOB, include_tinyblob TINYBLOB, 
+      st.execSQL(@"CREATE TABLE t62088 (include_blob BLOB, include_tinyblob TINYBLOB, 
             include_longblob LONGBLOB, exclude_tinyblob TINYBLOB, exclude_blob BLOB, 
             exclude_longblob LONGBLOB)");
 
@@ -145,7 +145,7 @@ namespace MySql.Data.MySqlClient.Tests
       string utf8_string = utf8.GetString(utf8_bytes, 0, utf8_bytes.Length);
 
       // insert our UTF-8 bytes into the table
-      MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?p1, ?p2, ?p3, ?p4, ?p5, ?p5)", st.conn);
+      MySqlCommand cmd = new MySqlCommand("INSERT INTO t62088 VALUES (?p1, ?p2, ?p3, ?p4, ?p5, ?p5)", st.conn);
       cmd.Parameters.AddWithValue("?p1", utf8_bytes);
       cmd.Parameters.AddWithValue("?p2", utf8_bytes);
       cmd.Parameters.AddWithValue("?p3", utf8_bytes);
@@ -159,7 +159,7 @@ namespace MySql.Data.MySqlClient.Tests
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
-        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", c);
+        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM t62088", c);
         DataTable dt = new DataTable();
         da.Fill(dt);
         foreach (DataColumn col in dt.Columns)
@@ -176,7 +176,7 @@ namespace MySql.Data.MySqlClient.Tests
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
-        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", c);
+        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM t62088", c);
         DataTable dt = new DataTable();
         da.Fill(dt);
         foreach (DataColumn col in dt.Columns)
@@ -196,7 +196,7 @@ namespace MySql.Data.MySqlClient.Tests
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
         c.Open();
-        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", c);
+        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM t62088", c);
         DataTable dt = new DataTable();
         da.Fill(dt);
         foreach (DataColumn col in dt.Columns)
@@ -247,7 +247,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       string connStr = st.GetConnectionString(true) + ";charset=utf8";
 
-      st.execSQL("CREATE TABLE Test (id int)");
+      st.execSQL("CREATE TABLE t62087 (id int)");
 
       using (MySqlConnection c = new MySqlConnection(connStr))
       {
@@ -255,7 +255,7 @@ namespace MySql.Data.MySqlClient.Tests
 
         try
         {
-          MySqlCommand cmd = new MySqlCommand("select `Numéro` from Test", c);
+          MySqlCommand cmd = new MySqlCommand("select `Numéro` from t62087", c);
           cmd.ExecuteScalar();
         }
         catch (Exception ex)
@@ -492,7 +492,13 @@ namespace MySql.Data.MySqlClient.Tests
 
    public void Dispose()
    {
-     st.execSQL("DROP TABLE IF EXISTS TEST");
+     st.execSQL("DROP TABLE IF EXISTS t62087");
+     st.execSQL("DROP TABLE IF EXISTS t62088");
+     st.execSQL("DROP TABLE IF EXISTS t62089");
+     st.execSQL("DROP TABLE IF EXISTS t62090");
+     st.execSQL("DROP TABLE IF EXISTS t62091");
+     st.execSQL("DROP TABLE IF EXISTS t62092");
+     st.execSQL("DROP TABLE IF EXISTS t62093");   
      st.execSQL("DROP TABLE IF EXISTS t62094");   
    }
   }

@@ -60,6 +60,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     private void InternalBytesAndBooleans(bool prepare)
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id TINYINT, idu TINYINT UNSIGNED, i INT UNSIGNED)");
       st.execSQL("INSERT INTO Test VALUES (-98, 140, 20)");
       st.execSQL("INSERT INTO Test VALUES (0, 0, 0)");
@@ -97,6 +98,7 @@ namespace MySql.Data.MySqlClient.Tests
     public void TreatTinyAsBool()
     {
       if (st.version < new Version(4, 1)) return;
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test2(i TINYINT(1))");
       st.execSQL("INSERT INTO Test2 VALUES(1)");
       st.execSQL("INSERT INTO Test2 VALUES(0)");
@@ -136,6 +138,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     private void InternalTestFloats(bool prepared)
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
 
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?fl, ?db, ?dec)", st.conn);
@@ -176,6 +179,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TestTime()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, tm TIME,  PRIMARY KEY(id))");
 
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, tm) VALUES (1, '00:00')", st.conn);
@@ -209,6 +213,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void YearType()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (yr YEAR)");
       st.execSQL("INSERT INTO Test VALUES (98)");
       st.execSQL("INSERT INTO Test VALUES (1990)");
@@ -347,6 +352,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BitAndDecimal()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (bt1 BIT(2), bt4 BIT(4), bt11 BIT(11), bt23 BIT(23), bt32 BIT(32)) engine=myisam");
       st.execSQL("INSERT INTO Test VALUES (2, 3, 120, 240, 1000)");
       st.execSQL("INSERT INTO Test VALUES (NULL, NULL, 100, NULL, NULL)");
@@ -390,6 +396,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void UpdateDecimalColumns()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id int not null auto_increment primary key, " +
         "dec1 decimal(10,1))");
 
@@ -414,6 +421,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void DecimalTests()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (val decimal(10,1))");
 
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(?dec)", st.conn);
@@ -442,6 +450,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void DecimalTests2()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (val decimal(10,1))");
 
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(?dec)", st.conn);
@@ -472,6 +481,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (bit1 BIT, bit2 BIT(5), bit3 BIT(10))");
 
       MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?b1, ?b2, ?b3)", st.conn);
@@ -502,6 +512,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void UnsignedTypes()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (b TINYINT UNSIGNED PRIMARY KEY)");
 
       MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", st.conn);
@@ -542,6 +553,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void TestNegativeTime()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (t time)");
       st.execSQL("INSERT INTO Test SET T='-07:24:00'");
 
@@ -593,6 +605,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void BinaryTypes()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(@"CREATE TABLE Test (c1 VARCHAR(20), c2 VARBINARY(20),
         c3 TEXT, c4 BLOB, c6 VARCHAR(20) CHARACTER SET BINARY)");
 
@@ -628,6 +641,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void RespectBinaryFlag()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (col1 VARBINARY(20), col2 BLOB)");
 
       string connStr = st.GetConnectionString(true) + ";respect binary flags=false";
@@ -651,6 +665,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test (id INT, `on` BOOLEAN, v TINYINT(2))");
       st.execSQL("INSERT INTO Test VALUES (1,1,1), (2,0,0)");
 
@@ -718,6 +733,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void Binary16AsGuidWithNull()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(@"CREATE TABLE Test (id int(10) NOT NULL AUTO_INCREMENT,
             AGUID binary(16), PRIMARY KEY (id))");
       Guid g = new Guid();
@@ -779,6 +795,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL(@"CREATE TABLE Test (ID int(11) NOT NULL, ogc_geom geometry NOT NULL,
         PRIMARY KEY  (`ID`))");
       st.execSQL(@"INSERT INTO Test VALUES (1, 
@@ -1017,6 +1034,7 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void NewGuidDataType()
     {
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("CREATE TABLE Test(id INT, g BINARY(16))");
 
       string connStr = st.GetConnectionString(true) + ";old guids=true";

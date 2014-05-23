@@ -36,12 +36,13 @@ namespace MySql.Data.MySqlClient.Tests
     public void SetFixture(SetUpClass data)
     {
       st = data;
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
     }
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS TEST");      
+      st.execSQL("DROP TABLE IF EXISTS Test");
     }
 
     [Fact]
@@ -131,7 +132,7 @@ namespace MySql.Data.MySqlClient.Tests
         c.Open();
         MySqlTransaction trans = c.BeginTransaction();
 
-        using (MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (1, 'boo')", c))
+        using (MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (1, 'boo')", c, trans))
         {
           cmd.ExecuteNonQuery();
         }
