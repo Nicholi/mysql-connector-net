@@ -48,8 +48,9 @@ namespace MySql.Data.MySqlClient.Tests
     [Fact]
     public void SimpleTableCaching()
     {
-      st.execSQL("CREATE TABLE test (id INT, name VARCHAR(20), name2 VARCHAR(20))");
-      st.execSQL("INSERT INTO test VALUES (1, 'boo', 'hoo'), (2, 'first', 'last'), (3, 'fred', 'flintstone')");
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("CREATE TABLE Test (id INT, name VARCHAR(20), name2 VARCHAR(20))");
+      st.execSQL("INSERT INTO Test VALUES (1, 'boo', 'hoo'), (2, 'first', 'last'), (3, 'fred', 'flintstone')");
 
       MySqlTrace.Listeners.Clear();
       MySqlTrace.Switch.Level = SourceLevels.All;
@@ -61,7 +62,7 @@ namespace MySql.Data.MySqlClient.Tests
       {
         c.Open();
 
-        MySqlCommand cmd = new MySqlCommand("test", c);
+        MySqlCommand cmd = new MySqlCommand("Test", c);
         cmd.CommandType = CommandType.TableDirect;
         ConsumeReader(cmd);
         // now run the query again but this time it shouldn't generate a call to the database

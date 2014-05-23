@@ -284,7 +284,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       st.execSQL("DROP TABLE IF EXISTS Test");      
       
-      st.execSQL("CREATE TABLE test (id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, " +
+      st.execSQL("CREATE TABLE Test (id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, " +
          "image MEDIUMBLOB NOT NULL, imageSize MEDIUMINT(8) UNSIGNED NOT NULL DEFAULT 0, " +
          "PRIMARY KEY (id))");
 
@@ -292,12 +292,12 @@ namespace MySql.Data.MySqlClient.Tests
       for (int x = 0; x < image.Length; x++)
         image[x] = (byte)(x % 47);
 
-      MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(NULL, ?image, ?size)", st.conn);
+      MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(NULL, ?image, ?size)", st.conn);
       cmd.Parameters.AddWithValue("?image", image);
       cmd.Parameters.AddWithValue("?size", image.Length);
       cmd.ExecuteNonQuery();
 
-      cmd.CommandText = "SELECT imageSize, length(image), image FROM test WHERE id=?id";
+      cmd.CommandText = "SELECT imageSize, length(image), image FROM Test WHERE id=?id";
       cmd.Parameters.AddWithValue("?id", 1);
       cmd.Prepare();
 
@@ -321,14 +321,14 @@ namespace MySql.Data.MySqlClient.Tests
       st.suExecSQL("SET GLOBAL max_allowed_packet=" + 500 * 1024);
 
       st.execSQL("DROP TABLE IF EXISTS Test");
-      st.execSQL("CREATE TABLE test (id INT(10), image BLOB)");
+      st.execSQL("CREATE TABLE Test (id INT(10), image BLOB)");
 
       using (MySqlConnection c = new MySqlConnection(st.GetConnectionString(true)))
       {
         c.Open();
         byte[] image = Utils.CreateBlob(1000000);
 
-        MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(NULL, ?image)", c);
+        MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(NULL, ?image)", c);
         cmd.Parameters.AddWithValue("?image", image);
           
         Exception ex = Assert.Throws<MySqlException>(() => cmd.ExecuteNonQuery());

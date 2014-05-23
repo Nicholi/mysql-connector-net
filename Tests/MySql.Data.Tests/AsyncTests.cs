@@ -82,9 +82,11 @@ namespace MySql.Data.MySqlClient.Tests
 
       if (st.conn.State != ConnectionState.Open)
         st.conn.Open();
-      
-      st.execSQL("CREATE TABLE test (id int)");
-      st.execSQL("CREATE PROCEDURE spTest() BEGIN INSERT INTO test VALUES(1); " +
+
+      st.execSQL("DROP TABLE IF EXISTS Test");
+      st.execSQL("DROP PROCEDURE IF EXISTS spTest");
+      st.execSQL("CREATE TABLE Test (id int)");
+      st.execSQL("CREATE PROCEDURE spTest() BEGIN INSERT INTO Test VALUES(1); " +
         "SELECT SLEEP(2); SELECT 'done'; END");
 
       MySqlCommand proc = new MySqlCommand("spTest", st.conn);
@@ -108,7 +110,7 @@ namespace MySql.Data.MySqlClient.Tests
         reader.Close();
 
         proc.CommandType = CommandType.Text;
-        proc.CommandText = "SELECT COUNT(*) FROM test";
+        proc.CommandText = "SELECT COUNT(*) FROM Test";
         object cnt = proc.ExecuteScalar();
         Assert.Equal(1, Convert.ToInt32(cnt));
       }
@@ -128,7 +130,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     public void Dispose()
     {
-      st.execSQL("DROP TABLE IF EXISTS test");
+      st.execSQL("DROP TABLE IF EXISTS Test");
       st.execSQL("DROP PROCEDURE IF EXISTS spTest");
     }
 
@@ -193,6 +195,8 @@ namespace MySql.Data.MySqlClient.Tests
     {
       if (st.Version < new Version(5, 0)) return;
 
+      st.execSQL("DROP TABLE IF EXISTS NonQueryAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS NonQueryAsyncSpTest");
       st.execSQL("CREATE TABLE NonQueryAsyncTest (id int)");
       st.execSQL("CREATE PROCEDURE NonQueryAsyncSpTest() BEGIN SET @x=0; REPEAT INSERT INTO NonQueryAsyncTest VALUES(@x); SET @x=@x+1; UNTIL @x = 100 END REPEAT; END");
 
@@ -216,6 +220,8 @@ namespace MySql.Data.MySqlClient.Tests
       if (st.conn.State != ConnectionState.Open)
         st.conn.Open();
 
+      st.execSQL("DROP TABLE IF EXISTS ReaderAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS ReaderAsyncSpTest");
       st.execSQL("CREATE TABLE ReaderAsyncTest (id int)");
       st.execSQL("CREATE PROCEDURE ReaderAsyncSpTest() BEGIN INSERT INTO ReaderAsyncTest VALUES(1); SELECT SLEEP(2); SELECT 'done'; END");
 
@@ -523,6 +529,8 @@ namespace MySql.Data.MySqlClient.Tests
     public async Task MSH_ExecuteNonQueryAsync()
     {
       if (st.Version < new Version(5, 0)) return;
+      st.execSQL("DROP TABLE IF EXISTS HelperNonQueryAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS HelperNonQueryAsyncSpTest");
       st.execSQL("CREATE TABLE HelperNonQueryAsyncTest (id int)");
       st.execSQL("CREATE PROCEDURE HelperNonQueryAsyncSpTest() BEGIN SET @x=0; REPEAT INSERT INTO HelperNonQueryAsyncTest VALUES(@x); SET @x=@x+1; UNTIL @x = 100 END REPEAT; END");
       
@@ -561,6 +569,8 @@ namespace MySql.Data.MySqlClient.Tests
       if (st.conn.State != ConnectionState.Open)
         st.conn.Open();
 
+      st.execSQL("DROP TABLE IF EXISTS HelperReaderAsyncTest");
+      st.execSQL("DROP PROCEDURE IF EXISTS HelperReaderAsyncSpTest");
       st.execSQL("CREATE TABLE HelperReaderAsyncTest (id int)");
       st.execSQL("CREATE PROCEDURE HelperReaderAsyncSpTest() BEGIN INSERT INTO HelperReaderAsyncTest VALUES(1); SELECT SLEEP(2); SELECT 'done'; END");
 
