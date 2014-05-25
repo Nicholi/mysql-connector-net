@@ -149,13 +149,13 @@ namespace MySql.Data.MySqlClient
     /// Gets or sets the maximum number of digits used to represent the <see cref="Value"/> property.
     /// </summary>
     [Category("Data")]
-    public override byte Precision { get; set; }
+    public byte Precision { get; set; }
 
     /// <summary>
     /// Gets or sets the number of decimal places to which <see cref="Value"/> is resolved.
     /// </summary>
     [Category("Data")]
-    public override byte Scale { get; set; }
+    public byte Scale { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum size, in bytes, of the data within the column.

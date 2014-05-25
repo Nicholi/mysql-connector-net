@@ -3,32 +3,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform>AnyCPU</Platform>
-    <!--    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform> -->
     <TargetFrameworkProfile />
-    <!--
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '10.0'">4.0</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '11.0'">4.5</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '12.0'">4.5.1</Framework>
-    <Framework Condition=" '$(Framework)' == ''">2.0</Framework>
-    <TargetFrameworkVersion Condition="'$(Framework)'!=''">v$(Framework)</TargetFrameworkVersion>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>-->
   </PropertyGroup>
-  <Choose>
-    <When Condition=" '$(Platform)' != 'AnyCPU'">
-      <PropertyGroup>
-        <Platform>AnyCPU</Platform>
-      </PropertyGroup>
-    </When>
-  </Choose>
   <Choose>
     <When Condition=" '$(VisualStudioVersion)' == '12.0'">
       <PropertyGroup>
         <ProductVersion>9.0.30729</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <Framework>4.5.1</Framework>
-        <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+        <Framework>4.5</Framework>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '11.0'">
@@ -37,7 +20,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.5</Framework>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '10.0'">
@@ -46,7 +28,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.0</Framework>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -57,6 +38,25 @@
         <Framework>3.5</Framework>
         <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
       </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
     </Otherwise>
   </Choose>
   <PropertyGroup>
@@ -81,7 +81,6 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <!-- <DefineConstants Condition=" $(Framework) >= '4.0' ">NET_40_OR_GREATER</DefineConstants> -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -139,19 +138,19 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CommandBuilder.cs" />
-    <Compile Include="common\Cache.cs" />
-    <Compile Include="common\ContextString.cs" />
-    <Compile Include="common\LowResolutionStopwatch.cs" />
-    <Compile Include="common\MyNetworkStream.cs" />
-    <Compile Include="common\MySqlTokenizer.cs" />
-    <Compile Include="common\NamedPipeStream.cs" />
-    <Compile Include="common\NativeMethods.cs" />
-    <Compile Include="common\Platform.cs" />
-    <Compile Include="common\QueryNormalizer.cs" />
-    <Compile Include="common\SharedMemoryStream.cs" />
-    <Compile Include="common\StreamCreator.cs" />
-    <Compile Include="common\StringUtility.cs" />
-    <Compile Include="common\Version.cs" />
+    <Compile Include="Common\Cache.cs" />
+    <Compile Include="Common\ContextString.cs" />
+    <Compile Include="Common\LowResolutionStopwatch.cs" />
+    <Compile Include="Common\MyNetworkStream.cs" />
+    <Compile Include="Common\MySqlTokenizer.cs" />
+    <Compile Include="Common\NamedPipeStream.cs" />
+    <Compile Include="Common\NativeMethods.cs" />
+    <Compile Include="Common\Platform.cs" />
+    <Compile Include="Common\QueryNormalizer.cs" />
+    <Compile Include="Common\SharedMemoryStream.cs" />
+    <Compile Include="Common\StreamCreator.cs" />
+    <Compile Include="Common\StringUtility.cs" />
+    <Compile Include="Common\Version.cs" />
     <Compile Include="CompressedStream.cs" />
     <Compile Include="Connection.cs">
       <SubType>Component</SubType>

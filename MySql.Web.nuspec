@@ -16,6 +16,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="Source\MySql.Web\bin\v4.5.1\Release\MySql.Web.dll" target="lib\net45\MySql.Web.dll" /> 
+    <file src="Source\MySql.Web\bin\v4.5\Release\MySql.Web.dll" target="lib\net45\MySql.Web.dll" /> 
   </files>
 </package>

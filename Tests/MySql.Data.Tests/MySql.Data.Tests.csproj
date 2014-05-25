@@ -5,9 +5,8 @@
       <PropertyGroup>
         <ProductVersion>9.0.30729</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <Framework>4.5.1</Framework>
-        <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER</DefineConstants>
+        <Framework>4.5</Framework>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '11.0'">
@@ -16,7 +15,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.5</Framework>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '10.0'">
@@ -25,7 +23,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.0</Framework>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -38,16 +35,28 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<Otherwise>
+	</Otherwise>
+  </Choose>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '10.0'">4.0</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '11.0'">4.5</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '12.0'">4.5.1</Framework>
-    <Framework Condition=" '$(Framework)' == ''">2.0</Framework>
-    <TargetFrameworkVersion Condition="'$(Framework)'!=''">v$(Framework)</TargetFrameworkVersion>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <Platform>AnyCPU</Platform>
     <ProjectGuid>{F29E5B3D-7F76-4CF9-BF5E-8E3A1377B1E4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -69,7 +78,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <!--<DefineConstants Condition=" ( '$(Framework)' == '4.0' ) or ( '$(Framework)' == '4.5' ) or ( '$(Framework)' == '4.5.1' ) ">NET_40_OR_GREATER;$(DefineConstants)</DefineConstants>-->
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -81,7 +89,7 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRules>

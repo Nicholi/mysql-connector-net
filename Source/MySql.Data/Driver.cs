@@ -325,6 +325,7 @@ namespace MySql.Data.MySqlClient
               setTimeZoneCmd.ExecuteNonQuery();
           }
           // we are either resetting connection or starting a new one, need to get timeZoneOffset again
+          // this is typically set in LoadServerProperties (which is execute earlier)
           timeZoneOffset = GetTimeZoneOffset(connection);
       }
 

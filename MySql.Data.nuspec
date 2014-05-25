@@ -13,6 +13,6 @@
     <tags>MySQL</tags>
   </metadata>
   <files>
-    <file src="Source\MySql.Data\bin\v4.5.1\Release\MySql.Data.dll" target="lib\net45\MySql.Data.dll" />
+    <file src="Source\MySql.Data\bin\v4.5\Release\MySql.Data.dll" target="lib\net45\MySql.Data.dll" />
   </files>
 </package>
