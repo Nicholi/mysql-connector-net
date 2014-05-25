@@ -76,6 +76,8 @@ namespace MySql.Web.Security
     private string passwordStrengthRegularExpression;
     private Application app;
 
+    private bool dateTimeUseUtc;
+
     /// <summary>
     /// Initializes the MySQL membership provider with the property values specified in the 
     /// ASP.NET application's configuration file. This method is not intended to be used directly 
@@ -119,6 +121,7 @@ namespace MySql.Web.Security
       requiresQuestionAndAnswer = Convert.ToBoolean(GetConfigValue(config["requiresQuestionAndAnswer"], "False"));
       requiresUniqueEmail = Convert.ToBoolean(GetConfigValue(config["requiresUniqueEmail"], "True"));
       writeExceptionsToEventLog = Convert.ToBoolean(GetConfigValue(config["writeExceptionsToEventLog"], "True"));
+      dateTimeUseUtc = Convert.ToBoolean(GetConfigValue(config["dateTimeUseUtc"], "False"));
       string temp_format = config["passwordFormat"];
 
       if (temp_format == null)
@@ -368,6 +371,14 @@ namespace MySql.Web.Security
       set { writeExceptionsToEventLog = value; }
     }
 
+    /// <summary>
+    /// Gets value to indicate if Provider uses Utc to generate DateTime objects.
+    /// </summary>
+    public bool DateTimeUseUtc
+    {
+      get { return dateTimeUseUtc; }
+    }
+
     #endregion
 
     #region Public Methods
@@ -419,7 +430,7 @@ namespace MySql.Web.Security
                         WHERE userId=@userId", connection);
           cmd.Parameters.AddWithValue("@pass",
               EncodePassword(newPassword, passwordKey, passwordFormat));
-          cmd.Parameters.AddWithValue("@lastPasswordChangedDate", DateTime.Now);
+          cmd.Parameters.AddWithValue("@lastPasswordChangedDate", DateTimeNow());
           cmd.Parameters.AddWithValue("@userId", userId);
           return cmd.ExecuteNonQuery() > 0;
         }
@@ -530,7 +541,7 @@ namespace MySql.Web.Security
       }
 
       string passwordKey = GetPasswordKey();
-      DateTime createDate = DateTime.Now;
+      DateTime createDate = DateTimeNow();
       MySqlTransaction transaction = null;
 
       using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -666,7 +677,7 @@ namespace MySql.Web.Security
     public override int GetNumberOfUsersOnline()
     {
       TimeSpan onlineSpan = new TimeSpan(0, Membership.UserIsOnlineTimeWindow, 0);
-      DateTime compareTime = DateTime.Now.Subtract(onlineSpan);
+      DateTime compareTime = DateTimeNow().Subtract(onlineSpan);
 
       try
       {
@@ -809,7 +820,7 @@ namespace MySql.Web.Security
           {
             cmd.CommandText =
                 @"UPDATE my_aspnet_users SET lastActivityDate = @date WHERE id=@userId";
-            cmd.Parameters.AddWithValue("@date", DateTime.Now);
+            cmd.Parameters.AddWithValue("@date", DateTimeNow());
             cmd.ExecuteNonQuery();
 
             cmd.CommandText = "UPDATE my_aspnet_membership SET LastActivityDate=@date WHERE userId=@userId";
@@ -863,7 +874,7 @@ namespace MySql.Web.Security
                         WHERE userId=@userId";
 
           MySqlCommand cmd = new MySqlCommand(sql, conn);
-          cmd.Parameters.AddWithValue("@lastDate", DateTime.Now);
+          cmd.Parameters.AddWithValue("@lastDate", DateTimeNow());
           cmd.Parameters.AddWithValue("@userId", userId);
           return cmd.ExecuteNonQuery() > 0;
         }
@@ -981,7 +992,7 @@ namespace MySql.Web.Security
 
           cmd.Parameters.AddWithValue("@pass",
               EncodePassword(newPassword, passwordKey, format));
-          cmd.Parameters.AddWithValue("@lastPassChange", DateTime.Now);
+          cmd.Parameters.AddWithValue("@lastPassChange", DateTimeNow());
           int rowsAffected = cmd.ExecuteNonQuery();
           if (rowsAffected != 1)
             throw new MembershipPasswordException(Resources.ErrorResettingPassword);
@@ -1082,7 +1093,7 @@ namespace MySql.Web.Security
             else if (isApproved)
             {
               isValid = true;
-              DateTime currentDate = DateTime.Now;
+              DateTime currentDate = DateTimeNow();
               MySqlCommand updateCmd = new MySqlCommand(
                   @"UPDATE my_aspnet_membership m, my_aspnet_users u 
                                 SET m.LastLoginDate = @lastLoginDate, u.lastActivityDate = @date,
@@ -1185,18 +1196,21 @@ namespace MySql.Web.Security
 
       bool isApproved = reader.GetBoolean("IsApproved");
       bool isLockedOut = reader.GetBoolean("IsLockedOut");
-      DateTime creationDate = reader.GetDateTime("CreationDate");
+      DateTime creationDate = GetDateTime(reader, "CreationDate");
       DateTime lastLoginDate = new DateTime();
       if (!(reader.GetValue(reader.GetOrdinal("LastLoginDate")) == DBNull.Value))
-        lastLoginDate = reader.GetDateTime("LastLoginDate");
+        lastLoginDate = GetDateTime(reader, "LastLoginDate");
 
-      DateTime lastActivityDate = reader.GetDateTime("LastActivityDate");
-      DateTime lastPasswordChangedDate = reader.GetDateTime("LastPasswordChangedDate");
+      DateTime lastActivityDate = GetDateTime(reader, "LastActivityDate");
+      DateTime lastPasswordChangedDate = GetDateTime(reader, "LastPasswordChangedDate");
       DateTime lastLockedOutDate = new DateTime();
       if (!(reader.GetValue(reader.GetOrdinal("LastLockedoutDate")) == DBNull.Value))
-        lastLockedOutDate = reader.GetDateTime("LastLockedoutDate");
+        lastLockedOutDate = GetDateTime(reader, "LastLockedoutDate");
 
-      MembershipUser u =
+      MembershipUser u = dateTimeUseUtc ?
+          new MySqlMembershipUser(Name, username, providerUserKey, email, passwordQuestion, comment, isApproved,
+                             isLockedOut, creationDate, lastLoginDate, lastActivityDate, lastPasswordChangedDate,
+                             lastLockedOutDate) : 
           new MembershipUser(Name, username, providerUserKey, email, passwordQuestion, comment, isApproved,
                              isLockedOut, creationDate, lastLoginDate, lastActivityDate, lastPasswordChangedDate,
                              lastLockedOutDate);
@@ -1292,17 +1306,17 @@ namespace MySql.Web.Security
           if (failureType == "Password")
           {
             failureCount = reader.GetInt32(0);
-            windowStart = reader.GetDateTime(1);
+            windowStart = GetDateTime(reader, 1);
           }
           if (failureType == "PasswordAnswer")
           {
             failureCount = reader.GetInt32(2);
-            windowStart = reader.GetDateTime(3);
+            windowStart = GetDateTime(reader, 3);
           }
         }
 
         DateTime windowEnd = windowStart.AddMinutes(PasswordAttemptWindow);
-        if (failureCount == 0 || DateTime.Now > windowEnd)
+        if (failureCount == 0 || DateTimeNow() > windowEnd)
         {
           if (failureType == "Password")
           {
@@ -1322,7 +1336,7 @@ namespace MySql.Web.Security
           }
           cmd.Parameters.Clear();
           cmd.Parameters.AddWithValue("@count", 1);
-          cmd.Parameters.AddWithValue("@windowStart", DateTime.Now);
+          cmd.Parameters.AddWithValue("@windowStart", DateTimeNow());
           cmd.Parameters.AddWithValue("@userId", userId);
           if (cmd.ExecuteNonQuery() < 0)
             throw new ProviderException(Resources.UnableToUpdateFailureCount);
@@ -1337,7 +1351,7 @@ namespace MySql.Web.Security
                             LastLockedOutDate = @lastLockedOutDate WHERE userId=@userId";
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@isLockedOut", true);
-            cmd.Parameters.AddWithValue("@lastLockedOutDate", DateTime.Now);
+            cmd.Parameters.AddWithValue("@lastLockedOutDate", DateTimeNow());
             cmd.Parameters.AddWithValue("@userId", userId);
             if (cmd.ExecuteNonQuery() < 0)
               throw new ProviderException(Resources.UnableToLockOutUser);
@@ -1485,6 +1499,25 @@ namespace MySql.Web.Security
           return false;
 
       return true;
+    }
+
+    private DateTime DateTimeNow()
+    {
+      return dateTimeUseUtc ? DateTime.UtcNow : DateTime.Now;
+    }
+
+    private DateTime GetDateTime(MySqlDataReader reader, String columnName)
+    {
+      return dateTimeUseUtc ? 
+          reader.GetDateTime(columnName, true) : 
+          reader.GetDateTime(columnName);
+    }
+
+    private DateTime GetDateTime(MySqlDataReader reader, int ordinalNumber)
+    {
+        return dateTimeUseUtc ?
+            reader.GetDateTime(ordinalNumber, true) :
+            reader.GetDateTime(ordinalNumber);
     }
 
     #endregion

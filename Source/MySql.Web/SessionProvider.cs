@@ -54,6 +54,8 @@ namespace MySql.Web.SessionState
     string exceptionMessage = "An exception occurred. Please check the event log.";
     Application app;
 
+    private bool dateTimeUseUtc;
+
     SessionStateSection sessionStateConfig;
 
     // cleanup  old session
@@ -97,6 +99,10 @@ namespace MySql.Web.SessionState
       get { return app.Id; }
     }
 
+    public bool DateTimeUseUtc
+    {
+      get { return dateTimeUseUtc; }
+    }
 
     /// <summary>
     /// Handles MySql exception.
@@ -148,6 +154,16 @@ namespace MySql.Web.SessionState
       string applicationName = HostingEnvironment.ApplicationVirtualPath;
       if (!String.IsNullOrEmpty(config["applicationName"]))
         applicationName = config["applicationName"];
+
+      dateTimeUseUtc = false;
+      if (!String.IsNullOrEmpty(config["dateTimeUseUtc"]))
+      {
+        bool testValue;
+        if (Boolean.TryParse(config["dateTimeUseUtc"], out testValue))
+        {
+          dateTimeUseUtc = testValue;
+        }
+      }
 
       // Get <sessionState> configuration element.
       Configuration webConfig = WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.ApplicationVirtualPath);
@@ -580,8 +596,8 @@ namespace MySql.Web.SessionState
           {
             if (reader.Read())
             {
-              DateTime now = reader.GetDateTime(0);
-              DateTime expires = reader.GetDateTime(1);
+              DateTime now = GetDateTime(reader, 0);
+              DateTime expires = GetDateTime(reader, 1);
               if (now.CompareTo(expires) > 0)
               {
                 //The record was expired. Mark it as not locked.
@@ -602,7 +618,7 @@ namespace MySql.Web.SessionState
 
               actionFlags = (SessionStateActions)(reader.GetInt32(4));
               timeout = reader.GetInt32(5);
-              DateTime lockDate = reader.GetDateTime(6);
+              DateTime lockDate = GetDateTime(reader, 6);
               lockAge = now.Subtract(lockDate);
               // If it's a read-only session set locked to the current lock
               // status (writable sessions have already done this)
@@ -894,6 +910,20 @@ namespace MySql.Web.SessionState
             }
           }
        }     
+    }
+
+    private DateTime GetDateTime(MySqlDataReader reader, String columnName)
+    {
+        return dateTimeUseUtc ?
+            reader.GetDateTime(columnName, true) :
+            reader.GetDateTime(columnName);
+    }
+
+    private DateTime GetDateTime(MySqlDataReader reader, int ordinalNumber)
+    {
+        return dateTimeUseUtc ?
+            reader.GetDateTime(ordinalNumber, true) :
+            reader.GetDateTime(ordinalNumber);
     }
   }
 }
