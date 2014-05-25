@@ -495,7 +495,7 @@ namespace MySql.Web.Properties {
         ///ALTER TABLE my_aspnet_usersinroles CONVERT TO CHARACTER SET DEFAULT;
         ///
         ///UPDATE my_aspnet_schemaversion SET version=4 WHERE version=3;
-        ///.
+        ///
         /// </summary>
         public static string schema4 {
             get {

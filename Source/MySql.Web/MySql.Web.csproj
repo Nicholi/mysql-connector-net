@@ -2,12 +2,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '10.0'">4.0</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '11.0'">4.5</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '12.0'">4.5.1</Framework>
-    <Framework Condition=" '$(Framework)' == ''">2.0</Framework>
-    <TargetFrameworkVersion Condition="'$(Framework)'!=''">v$(Framework)</TargetFrameworkVersion>
+    <Platform>AnyCPU</Platform>
+    <Framework>4.5</Framework>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C28B1166-1380-445D-AEC1-8A18B990DD18}</ProjectGuid>
@@ -39,8 +36,26 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <DefineConstants Condition=" ( '$(Framework)' == '4.0' ) or ( '$(Framework)' == '4.5' ) or ( '$(Framework)' == '4.5.1' ) ">NET_40_OR_GREATER</DefineConstants>
   </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<Otherwise>
+	</Otherwise>
+  </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -83,7 +98,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Management" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.ApplicationServices" Condition=" ( '$(Framework)' == '4.0' ) or ( '$(Framework)' == '4.5' ) or ( '$(Framework)' == '4.5.1' ) " />
+    <Reference Include="System.Web.ApplicationServices" Condition=" ( '$(Framework)' == '4.0' ) or ( '$(Framework)' == '4.5' ) or ( '$(Framework)' == '4.5.1' ) or ( '$(Framework)' == '4.5.2' ) " />
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" Condition="('$(Framework)' == '4.0') or ('$(Framework)' == '4.5') or ('$(Framework)' == '4.5.1')" />

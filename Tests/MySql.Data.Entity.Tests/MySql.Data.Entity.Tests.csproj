@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">9.0</VisualStudioVersion>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -15,9 +13,8 @@
       <PropertyGroup>
         <ProductVersion>9.0.30729</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <Framework>4.5.1</Framework>
-        <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-        <DefineConstants>TRACE;NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER</DefineConstants>
+        <Framework>4.5</Framework>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '11.0'">
@@ -26,7 +23,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.5</Framework>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>TRACE;NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '10.0'">
@@ -35,7 +31,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.0</Framework>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>TRACE;NET_40_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -45,13 +40,31 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>3.5</Framework>
         <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-        <DefineConstants>TRACE</DefineConstants>
       </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
     </Otherwise>
   </Choose>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform>AnyCPU</Platform>
     <ProjectGuid>{2B44356E-1455-42F8-85D2-43271AEB2908}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -83,7 +96,7 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
-    <DefineConstants>DEBUG;$(DefineConstants);EF6</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE;EF6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -95,7 +108,7 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Release\</OutputPath>
-    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;EF6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -581,6 +594,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets. -->
@@ -592,7 +608,7 @@
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
-  <Import Project="EdmxArtifactsRenamingv4.x.targets" Condition="'$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1'" />
+  <Import Project="EdmxArtifactsRenamingv4.x.targets" Condition="'$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1' or '$(Framework)' == '4.5.2'" />
   <Import Project="EdmxArtifactsRenamingv3.5.targets" Condition="'$(Framework)' == '3.5'" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -2,26 +2,18 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform>AnyCPU</Platform>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <!--
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '10.0'">4.0</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '11.0'">4.5</Framework>
-    <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '12.0'">4.5.1</Framework>
-    <Framework Condition=" '$(Framework)' == ''">2.0</Framework>
-    <TargetFrameworkVersion Condition="'$(Framework)'!=''">v$(Framework)</TargetFrameworkVersion>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>-->
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(VisualStudioVersion)' == '12.0'">
       <PropertyGroup>
         <ProductVersion>9.0.30729</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <Framework>4.5.1</Framework>
-        <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-        <DefineConstants>TRACE;NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+        <Framework>4.5</Framework>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '11.0'">
@@ -30,11 +22,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.5</Framework>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>TRACE;NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
-        <!--
-		<DefineConstants>NET_40_OR_GREATER</DefineConstants>
-		<DefineConstants>NET_45_OR_GREATER</DefineConstants> 
-		-->
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '10.0'">
@@ -43,7 +30,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.0</Framework>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>TRACE;NET_40_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -53,13 +39,30 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>3.5</Framework>
         <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-        <DefineConstants>TRACE</DefineConstants>
       </PropertyGroup>
     </Otherwise>
   </Choose>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+	  <PropertyGroup>
+	    <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+	  </PropertyGroup>
+	</When>
+	<Otherwise>
+	</Otherwise>
+  </Choose>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EDED3135-95D2-4BCE-A810-F3F2AD7935B7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -90,7 +93,7 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
-    <DefineConstants>DEBUG;$(DefineConstants);EF6</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE;EF6</DefineConstants>
     <AssemblyName>MySql.Data.Entity.EF6</AssemblyName>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -103,7 +106,7 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Release\</OutputPath>
-    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;EF6</DefineConstants>
     <AssemblyName>MySql.Data.Entity.EF6</AssemblyName>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -142,14 +145,14 @@
     <Compile Include="Generators\SqlGenerator.cs" />
     <Compile Include="Generators\UpdateGenerator.cs" />
     <Compile Include="MySqlEFConfiguration.cs" />
-    <Compile Include="MySqlConnectionFactory.cs" Condition="'$(Framework)' == '4.0' or $(Framework) == '4.5' or $(Framework) == '4.5.1'" />
+    <Compile Include="MySqlConnectionFactory.cs" Condition="( '$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1' or '$(Framework)' == '4.5.2' )" />
     <Compile Include="MySqlDependencyResolver.cs" />
     <Compile Include="MySqlExecutionStrategy.cs" />
     <Compile Include="MySqlHistoryContext.cs" />
     <Compile Include="MySqlLogger.cs" />
-    <Compile Include="MySqlMigrationSqlGenerator.cs" Condition="'$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1'" />
-    <Compile Include="MySqlSpatialServices.cs" Condition="( '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1') " />
-    <Compile Include="MySqlSpatialDataReader.cs" Condition="( '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1') " />
+    <Compile Include="MySqlMigrationSqlGenerator.cs" Condition="( '$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1' or '$(Framework)' == '4.5.2' )" />
+    <Compile Include="MySqlSpatialServices.cs" Condition="( '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1' or '$(Framework)' == '4.5.2' )" />
+    <Compile Include="MySqlSpatialDataReader.cs" Condition="( '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1' or '$(Framework)' == '4.5.2' )" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

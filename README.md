@@ -23,3 +23,6 @@ Source/MySql.Data.Entity/Properties/AssemblyInfo.cs
 Source/MySql.Data/Properties/AssemblyInfo.cs
 Tests/MySql.Data.Tests/MediumTrust/MediumTrustDomain.cs
 Tests/MySql.Data.Tests/Properties/AssemblyInfo.cs
+
+6. Get public key token of built assembly.
+sn -T MySql.Data.Entity.EF6.dll

@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform>AnyCPU</Platform>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -11,9 +11,8 @@
       <PropertyGroup>
         <ProductVersion>9.0.30729</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <Framework>4.5.1</Framework>
-        <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER</DefineConstants>
+        <Framework>4.5</Framework>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '11.0'">
@@ -22,7 +21,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.5</Framework>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <When Condition=" '$(VisualStudioVersion)' == '10.0'">
@@ -31,7 +29,6 @@
         <SchemaVersion>2.0</SchemaVersion>
         <Framework>4.0</Framework>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -44,9 +41,26 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+    </Otherwise>
+  </Choose>
   <PropertyGroup>
-    <TargetFrameworkVersion Condition="'$(Framework)'!=''">v$(Framework)</TargetFrameworkVersion>
-    <ProductVersion>9.0.30729</ProductVersion>
     <ProjectGuid>{83462D15-E576-4079-BBC9-9EE1CF0B24DD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -68,7 +82,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <!--<DefineConstants Condition=" ( '$(Framework)' == '4.0' ) or ( '$(Framework)' == '4.5' ) or ( '$(Framework)' == '4.5.1' ) ">NET_40_OR_GREATER;$(DefineConstants)</DefineConstants>-->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -93,28 +106,11 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <Choose>
-    <When Condition=" '$(VisualStudioVersion)' == '12.0'">
-      <ItemGroup>
-        <Reference Include="System.Web.ApplicationServices" />
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(VisualStudioVersion)' == '11.0'">
-      <ItemGroup>
-        <Reference Include="System.Web.ApplicationServices" />
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(VisualStudioVersion)' == '10.0'">
-      <ItemGroup>
-        <Reference Include="System.Web.ApplicationServices" />
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.ApplicationServices" Condition=" ( '$(Framework)' == '4.0' ) or ( '$(Framework)' == '4.5' ) or ( '$(Framework)' == '4.5.1' ) or ( '$(Framework)' == '4.5.2' ) " />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
