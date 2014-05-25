@@ -127,7 +127,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MySql.Web.nuspec" />
     <None Include="Properties\schema6.sql" />
     <None Include="Properties\schema1.sql" />
     <None Include="Properties\schema4.sql" />

@@ -212,11 +212,11 @@ namespace MySql.Data.MySqlClient.Tests
 
         public event GetConnectionStringInfoCallback OnGetConnectionStringInfo;
 
-        internal protected string GetConnectionString(string userId, string pw, bool persistSecurityInfo, bool includedb)
+        internal protected string GetConnectionString(string userId, string pw, bool persistSecurityInfo, bool includedb, bool pooling, bool resetConnection)
         {
-            string connStr = String.Format("server={0};user id={1};pooling=false;" +
-                 "persist security info={2};connection reset=true;allow user variables=true;port={3};",
-                 host, userId, persistSecurityInfo.ToString().ToLower(),port);
+            string connStr = String.Format("server={0};user id={1};pooling={4};" +
+                 "persist security info={2};connection reset={5};allow user variables=true;port={3};",
+                 host, userId, persistSecurityInfo.ToString().ToLower(),port,pooling.ToString().ToLower(),resetConnection.ToString().ToLower());
             if (pw != null)
                 connStr += String.Format(";password={0};", pw);
             if (includedb)
@@ -228,12 +228,22 @@ namespace MySql.Data.MySqlClient.Tests
 
         internal protected string GetConnectionString(string userId, string pw, bool includedb)
         {
-            return GetConnectionString(userId, pw, true, includedb);
+            return GetConnectionString(userId, pw, true, includedb, false, true);
+        }
+
+        internal protected string GetConnectionString(string userId, string pw, bool includedb, bool pooling, bool resetConnection)
+        {
+            return GetConnectionString(userId, pw, true, includedb, pooling, resetConnection);
         }
 
         internal protected string GetConnectionString(bool includedb)
         {
             return GetConnectionString(user, password, includedb);
+        }
+
+        internal protected string GetConnectionString(bool includedb, bool pooling, bool resetConnection)
+        {
+            return GetConnectionString(user, password, includedb, pooling, resetConnection);
         }
 
         public void SetupRootConnection()

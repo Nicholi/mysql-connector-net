@@ -269,7 +269,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="MySql.Data.nuspec" />
     <None Include="Properties\keywords.txt" />
   </ItemGroup>
   <ItemGroup>

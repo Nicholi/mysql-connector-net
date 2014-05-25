@@ -331,6 +331,17 @@ namespace MySql.Data.MySqlClient
       else
         Encoding = CharSetMap.GetEncoding(Version, "latin1");
 
+      if (!String.IsNullOrEmpty(connection.Settings.DefaultTimeZone))
+      {
+          using (var setTimeZoneCmd = new MySqlCommand("SET @@session.time_zone = ?Session", connection))
+          {
+              setTimeZoneCmd.Parameters.AddWithValue("?Session", connection.Settings.DefaultTimeZone);
+              setTimeZoneCmd.ExecuteNonQuery();
+          }
+          // we are either resetting connection or starting a new one, need to get timeZoneOffset again
+          timeZoneOffset = GetTimeZoneOffset(connection);
+      }
+
       handler.Configure();
     }
 
