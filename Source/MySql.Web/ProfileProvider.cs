@@ -50,6 +50,7 @@ namespace MySql.Web.Profile
   public class MySQLProfileProvider : ProfileProvider
   {
     private string connectionString;
+    private bool dateTimeUseUtc;
     private Application app;
 
     #region Abstract Members
@@ -80,6 +81,7 @@ namespace MySql.Web.Profile
       try
       {
         string applicationName = GetConfigValue(config["applicationName"], HostingEnvironment.ApplicationVirtualPath);
+        dateTimeUseUtc = Convert.ToBoolean(GetConfigValue(config["dateTimeUseUtc"], "False"));
 
         connectionString = "";
         ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings[
@@ -382,6 +384,11 @@ namespace MySql.Web.Profile
       set { app.Name = value; }
     }
 
+    public bool DateTimeUseUtc
+    {
+      get { return dateTimeUseUtc; }
+    }
+
     /// <summary>
     /// Returns the collection of settings property values for the specified application instance and settings property group.
     /// </summary>
@@ -648,8 +655,8 @@ namespace MySql.Web.Profile
             ProfileInfo pi = new ProfileInfo(
                 reader.GetString("name"),
                 reader.GetBoolean("isAnonymous"),
-                reader.GetDateTime("lastActivityDate"),
-                reader.GetDateTime("lastUpdatedDate"),
+                GetDateTime(reader, "lastActivityDate"),
+                GetDateTime(reader, "lastUpdatedDate"),
                 reader.GetInt32("profilesize"));
             pic.Add(pi);
           }
@@ -667,6 +674,20 @@ namespace MySql.Web.Profile
         return defaultValue;
       }
       return configValue;
+    }
+
+    private DateTime GetDateTime(MySqlDataReader reader, String columnName)
+    {
+        return dateTimeUseUtc ?
+            reader.GetDateTime(columnName, true) :
+            reader.GetDateTime(columnName);
+    }
+
+    private DateTime GetDateTime(MySqlDataReader reader, int ordinalNumber)
+    {
+        return dateTimeUseUtc ?
+            reader.GetDateTime(ordinalNumber, true) :
+            reader.GetDateTime(ordinalNumber);
     }
 
     #endregion

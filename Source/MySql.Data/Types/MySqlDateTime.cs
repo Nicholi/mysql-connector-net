@@ -432,6 +432,25 @@ namespace MySql.Data.Types
       return new DateTime(year, month, day, hour, minute, second, kind).AddTicks(microsecond * 10);
     }
 
+    public DateTime GetDateTime(bool convertTimeZone)
+    {
+        if (!IsValidDateTime)
+            throw new MySqlConversionException("Unable to convert MySQL date/time value to System.DateTime");
+
+        if ((millisecond < 0) || (millisecond >= 0x3e8))
+            millisecond = (int)(millisecond / 0x3e8);
+
+        DateTimeKind kind = DateTimeKind.Unspecified;
+        if (convertTimeZone)
+        {
+            if (TimezoneOffset == 0)
+                kind = DateTimeKind.Utc;
+            else
+                kind = DateTimeKind.Local;
+        }
+        return new DateTime(year, month, day, hour, minute, second, millisecond, kind);
+    }
+
     private static string FormatDateCustom(string format, int monthVal, int dayVal, int yearVal)
     {
       format = format.Replace("MM", "{0:00}");

@@ -467,6 +467,11 @@ namespace MySql.Data.MySqlClient
       return GetDateTime(GetOrdinal(column));
     }
 
+    public DateTime GetDateTime(string column, bool convertTimeZone)
+    {
+      return GetDateTime(GetOrdinal(column), convertTimeZone);
+    }
+
     /// <include file='docs/MySqlDataReader.xml' path='docs/GetDateTime/*'/>
     public override DateTime GetDateTime(int i)
     {
@@ -487,6 +492,27 @@ namespace MySql.Data.MySqlClient
         return DateTime.MinValue;
       else
         return dt.GetDateTime();
+    }
+
+    public DateTime GetDateTime(int i, bool convertTimeZone)
+    {
+        IMySqlValue val = GetFieldValue(i, true);
+        MySqlDateTime dt;
+
+        if (val is MySqlDateTime)
+            dt = (MySqlDateTime)val;
+        else
+        {
+            // we need to do this because functions like date_add return string
+            string s = GetString(i);
+            dt = MySqlDateTime.Parse(s);
+        }
+
+        dt.TimezoneOffset = driver.timeZoneOffset;
+        if (connection.Settings.ConvertZeroDateTime && !dt.IsValidDateTime)
+            return DateTime.MinValue;
+        else
+            return dt.GetDateTime(convertTimeZone);
     }
 
     public MySqlDecimal GetMySqlDecimal(string column)

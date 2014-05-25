@@ -31,6 +31,8 @@ using MySql.Web.Security;
 using System.Data;
 using System.Configuration.Provider;
 using MySql.Data.MySqlClient;
+using System.Configuration;
+using System.Threading;
 
 namespace MySql.Web.Tests
 {
@@ -50,7 +52,7 @@ namespace MySql.Web.Tests
       //Nothing to clean
     }
 
-    private void CreateUserWithFormat(MembershipPasswordFormat format)
+    private void CreateUserWithFormat(MembershipPasswordFormat format, bool dateTimeUseUtc)
     {
       provider = new MySQLMembershipProvider();
       NameValueCollection config = new NameValueCollection();
@@ -58,6 +60,7 @@ namespace MySql.Web.Tests
       config.Add("applicationName", "/");
       config.Add("passwordStrengthRegularExpression", "bar.*");
       config.Add("passwordFormat", format.ToString());
+      config.Add("dateTimeUseUtc", dateTimeUseUtc.ToString());
       provider.Initialize(null, config);
 
       // create the user
@@ -79,7 +82,7 @@ namespace MySql.Web.Tests
     [Fact]
     public void CreateUserWithHashedPassword()
     {
-      CreateUserWithFormat(MembershipPasswordFormat.Hashed);      
+      CreateUserWithFormat(MembershipPasswordFormat.Hashed, false);      
       //Cleanup
       provider.DeleteUser("foo", true);
     }
@@ -90,7 +93,7 @@ namespace MySql.Web.Tests
       //TODO check this test logic
       try
       {
-        CreateUserWithFormat(MembershipPasswordFormat.Encrypted);
+        CreateUserWithFormat(MembershipPasswordFormat.Encrypted, false);
       }
       catch (ProviderException)
       {
@@ -102,7 +105,7 @@ namespace MySql.Web.Tests
     [Fact]
     public void CreateUserWithClearPassword()
     {
-      CreateUserWithFormat(MembershipPasswordFormat.Clear);
+      CreateUserWithFormat(MembershipPasswordFormat.Clear, false);
       //Cleanup
       provider.DeleteUser("foo", true);
     }
@@ -113,7 +116,7 @@ namespace MySql.Web.Tests
     [Fact]
     public void ChangePassword()
     {
-      CreateUserWithFormat(MembershipPasswordFormat.Hashed);   
+      CreateUserWithFormat(MembershipPasswordFormat.Hashed, false);   
       ArgumentException ex = Assert.Throws<ArgumentException>(() => provider.ChangePassword("foo", "barbar!", "bar2"));
       
       Assert.Equal("newPassword", ex.ParamName);
@@ -183,14 +186,14 @@ namespace MySql.Web.Tests
     [Fact]
     public void DeleteUser()
     {
-      CreateUserWithFormat(MembershipPasswordFormat.Hashed);      
+      CreateUserWithFormat(MembershipPasswordFormat.Hashed, false);      
       Assert.True(provider.DeleteUser("foo", true));
       DataTable table = st.FillTable("SELECT * FROM my_aspnet_membership");
       Assert.Equal(0, table.Rows.Count);
       table = st.FillTable("SELECT * FROM my_aspnet_users");
       Assert.Equal(0, table.Rows.Count);
 
-      CreateUserWithFormat(MembershipPasswordFormat.Hashed);     
+      CreateUserWithFormat(MembershipPasswordFormat.Hashed, false);     
       provider = new MySQLMembershipProvider();
       NameValueCollection config = new NameValueCollection();
       config.Add("connectionStringName", "LocalMySqlServer");
@@ -206,7 +209,7 @@ namespace MySql.Web.Tests
     [Fact]
     public void FindUsersByName()
     {
-      CreateUserWithFormat(MembershipPasswordFormat.Hashed);      
+      CreateUserWithFormat(MembershipPasswordFormat.Hashed, false);      
       int records;
       MembershipUserCollection users = provider.FindUsersByName("F%", 0, 10, out records);
       Assert.Equal(1, records);
@@ -219,7 +222,7 @@ namespace MySql.Web.Tests
     [Fact]
     public void FindUsersByEmail()
     {
-      CreateUserWithFormat(MembershipPasswordFormat.Hashed);   
+      CreateUserWithFormat(MembershipPasswordFormat.Hashed, false);   
 
       int records;
       MembershipUserCollection users = provider.FindUsersByEmail("foo@bar.com", 0, 10, out records);
@@ -798,5 +801,109 @@ namespace MySql.Web.Tests
       Membership.DeleteUser("code");
     }
 
+    private static DateTime Truncate(DateTime dateTime, long truncateTo)
+    {
+        return new DateTime((dateTime.Ticks / truncateTo) * truncateTo);
+    }
+
+    private void ResumeConnectionString(ConnectionStringSettings css)
+    {
+        Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+        config.ConnectionStrings.ConnectionStrings.Remove("LocalMySqlServer");
+        config.Save();
+        ConfigurationManager.RefreshSection("connectionStrings");
+
+        config.ConnectionStrings.ConnectionStrings.Add(css);
+        config.Save();
+        ConfigurationManager.RefreshSection("connectionStrings");
+    }
+
+    private ConnectionStringSettings AddConnectionString(String timeZone)
+    {
+        Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+        var css = config.ConnectionStrings.ConnectionStrings["LocalMySqlServer"];
+        config.ConnectionStrings.ConnectionStrings.Remove("LocalMySqlServer");
+        config.Save();
+        ConfigurationManager.RefreshSection("connectionStrings");
+
+        var newCssStr = css.ConnectionString;
+        if (!String.IsNullOrEmpty(timeZone))
+        {
+            newCssStr += String.Format(";time_zone={0}", timeZone);
+        }
+        ConnectionStringSettings newCss = new ConnectionStringSettings(css.Name, newCssStr, css.ProviderName);
+        config.ConnectionStrings.ConnectionStrings.Add(newCss);
+        config.Save();
+        ConfigurationManager.RefreshSection("connectionStrings");
+
+        return css;
+    }
+
+    [Fact]
+    public void UserDatesInUtc()
+    {
+      var savedCss = AddConnectionString("+00:00");
+
+      var testProv = new MySQLMembershipProvider();
+      NameValueCollection config = new NameValueCollection();
+      config.Add("connectionStringName", "LocalMySqlServer");
+      config.Add("applicationName", "/");
+      config.Add("dateTimeUseUtc", "True");
+      testProv.Initialize(null, config);
+
+      var userCreation = DateTime.UtcNow;
+      // create the user
+      MembershipCreateStatus status;
+      var user = testProv.CreateUser("fab", "barbar!", "fab@bar.com", null, null, true, null, out status);
+      Assert.Equal(MembershipCreateStatus.Success, status);
+
+      Assert.Equal(userCreation.Kind, user.CreationDate.Kind);
+      Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.CreationDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
+      Assert.Equal(userCreation.Kind, user.LastLoginDate.Kind);
+      Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
+
+      Thread.Sleep(30000);
+
+      var lastLogin = DateTime.UtcNow;
+      var validated = testProv.ValidateUser("fab", "barbar!");
+      Assert.Equal(true, validated);
+      user = testProv.GetUser("fab", false);
+
+      Assert.Equal(lastLogin.Kind, user.LastLoginDate.Kind);
+      Assert.Equal(Truncate(lastLogin, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
+
+      ResumeConnectionString(savedCss);
+    }
+
+    [Fact]
+    public void UserDatesNotInUtc()
+    {
+        var testProv = new MySQLMembershipProvider();
+        NameValueCollection config = new NameValueCollection();
+        config.Add("connectionStringName", "LocalMySqlServer");
+        config.Add("applicationName", "/");
+        config.Add("dateTimeUseUtc", "False");
+        testProv.Initialize(null, config);
+
+        var userCreation = DateTime.Now;
+        // create the user
+        MembershipCreateStatus status;
+        var user = testProv.CreateUser("nab", "barbar!", "nab@bar.com", null, null, true, null, out status);
+        Assert.Equal(MembershipCreateStatus.Success, status);
+
+        Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.CreationDate, TimeSpan.TicksPerSecond));
+        Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate, TimeSpan.TicksPerSecond));
+
+        Thread.Sleep(30000);
+
+        var lastLogin = DateTime.Now;
+        var validated = testProv.ValidateUser("nab", "barbar!");
+        Assert.Equal(true, validated);
+        user = testProv.GetUser("nab", false);
+
+        Assert.Equal(Truncate(lastLogin, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate, TimeSpan.TicksPerSecond));
+    }
   }
 }

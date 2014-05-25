@@ -39,22 +39,22 @@
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5.1'">
-	  <PropertyGroup>
-	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
-	  </PropertyGroup>
-	</When>
-	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
-	  <PropertyGroup>
-	    <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
-	  </PropertyGroup>
-	</When>
-	<When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
-	  <PropertyGroup>
-	    <DefineConstants>NET_40_OR_GREATER</DefineConstants>
-	  </PropertyGroup>
-	</When>
-	<Otherwise>
-	</Otherwise>
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER;NET_451_OR_GREATER;</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER;NET_45_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+      <PropertyGroup>
+        <DefineConstants>NET_40_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+    </Otherwise>
   </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -112,7 +112,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MembershipProvider.cs" />
-	<Compile Include="PersonalizationConnectionHelper.cs" />
+    <Compile Include="MySqlMembershipUser.cs" />
+    <Compile Include="PersonalizationConnectionHelper.cs" />
     <Compile Include="PersonalizationProvider.cs" />
     <Compile Include="PersonalizationProviderProcedures.cs" />
     <Compile Include="MySqlDatabaseWrapper.cs" Condition="('$(Framework)' == '4.0') or ('$(Framework)' == '4.5') or ('$(Framework)' == '4.5.1')" />
