@@ -19,11 +19,11 @@ namespace MySql.Web
             isApproved, isLockedOut, 
             creationDate, lastLoginDate, lastActivityDate, lastPasswordChangedDate, lastLockoutDate)
         {
-            m_CreationDate = creationDate;
-            m_LastLoginDate = lastLoginDate;
-            m_LastActivityDate = lastActivityDate;
-            m_LastPasswordChangedDate = lastPasswordChangedDate;
-            m_LastLockoutDate = lastLockoutDate;
+            m_CreationDate = creationDate.ToUniversalTime();
+            m_LastLoginDate = lastLoginDate.ToUniversalTime();
+            m_LastActivityDate = lastActivityDate.ToUniversalTime();
+            m_LastPasswordChangedDate = lastPasswordChangedDate.ToUniversalTime();
+            m_LastLockoutDate = lastLockoutDate.ToUniversalTime();
         }
 
         public override DateTime CreationDate
