@@ -22,6 +22,8 @@
 
 using System;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using MySql.Data.MySqlClient;
 using MySql.Data.MySqlClient.Properties;
 using Xunit;
@@ -1356,5 +1358,480 @@ namespace MySql.Data.MySqlClient.Tests
       }
       #endregion
 #endif
+
+    // tests done without connection reset and pooling
+    // shows that each new connection is always running default time_zone setting
+    [Fact]
+    public void DefaultTimeZoneSet()
+    {
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, false, false)))
+        {
+            dbConn.Open();
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test initial time_zone settings
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("SYSTEM", sessionTimeZone);
+        }
+        Thread.Sleep(2);
+
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, false, false) + ";time_zone=+00:00"))
+        {
+            dbConn.Open();
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // now test time_zone (on a new connection, no pooling), when using our new default time_zone parameter
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+00:00", sessionTimeZone);
+        }
+        Thread.Sleep(2);
+
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, false, false)))
+        {
+            dbConn.Open();
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // now test a new MySqlConnection to assure its back to the original time_zones
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("SYSTEM", sessionTimeZone);
+        }
+    }
+
+    [Fact]
+    public void DefaultTimeZoneResetPooledConnection()
+    {
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, true) + ";time_zone=+02:00"))
+        {
+            dbConn.Open();
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test initial time_zone settings
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+02:00", sessionTimeZone);
+
+            // set session time_zone for connection
+            using (var dbCmd = new MySqlCommand("SET @@session.time_zone = '+03:00'", dbConn))
+            {
+                dbCmd.ExecuteNonQuery();
+            }
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+03:00", sessionTimeZone);
+
+            dbConn.Close();
+            dbConn.Open();
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // since we do reset the connection, the time_zone should match the default time_zone param
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+02:00", sessionTimeZone);
+        }
+    }
+
+    [Fact]
+    public void DefaultTimeZoneNoResetPooledConnection()
+    {
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, false) + ";time_zone=+04:00"))
+        {
+            dbConn.Open();
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test initial time_zone settings
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+04:00", sessionTimeZone);
+
+            // set session time_zone for connection
+            using (var dbCmd = new MySqlCommand("SET @@session.time_zone = '+05:00'", dbConn))
+            {
+                dbCmd.ExecuteNonQuery();
+            }
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+05:00", sessionTimeZone);
+
+            dbConn.Close();
+            dbConn.Open();
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // since we do not reset the connection, the time_zone should be the same
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+05:00", sessionTimeZone);
+        }
+    }
+
+    [Fact]
+    public void DefaultTimeZoneResetConnection()
+    {
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, false, false) + ";time_zone=+03:00"))
+        {
+            dbConn.Open();
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test initial time_zone settings
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+03:00", sessionTimeZone);
+
+            // set session time_zone for pooled connection
+            using (var dbCmd = new MySqlCommand("SET @@session.time_zone = '+04:00'", dbConn))
+            {
+                dbCmd.ExecuteNonQuery();
+            }
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+04:00", sessionTimeZone);
+
+            dbConn.Close();
+            dbConn.Open();
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // unpooled connections should always reset
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+03:00", sessionTimeZone);
+        }
+    }
+
+    [Fact]
+    public void SessionTimeZoneSetOnPooledNoReset()
+    {
+        int serverThread1;
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2"))
+        {
+            dbConn.Open();
+            serverThread1 = dbConn.ServerThread;
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test initial global/session timezones
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("SYSTEM", sessionTimeZone);
+
+            // set session time_zone for pooled connection
+            using (var dbCmd = new MySqlCommand("SET @@session.time_zone = '+01:00'", dbConn))
+            {
+                dbCmd.ExecuteNonQuery();
+            }
+
+            globalTimeZone = null;
+            sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test new set session time_zone
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+01:00", sessionTimeZone);
+        }
+        Thread.Sleep(2);
+
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2"))
+        {
+            dbConn.Open();
+            // assure we get back the same pooled connection
+            Assert.Equal(serverThread1, dbConn.ServerThread);
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // we should get back the same time_zone we set in previous pooled connection
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+01:00", sessionTimeZone);
+
+            using (var dbConn2 = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2"))
+            {
+                dbConn2.Open();
+
+                // we should see a new server thread
+                Assert.NotEqual(serverThread1, dbConn2.ServerThread);
+
+                String globalTimeZone2 = null,
+                       sessionTimeZone2 = null;
+                using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn2))
+                using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (dbReader.Read())
+                    {
+                        globalTimeZone2 = dbReader.GetString("global");
+                        sessionTimeZone2 = dbReader.GetString("session");
+                    }
+                }
+
+                // the only other connection in our pool should have the default time_zone from conn string
+                Assert.Equal("SYSTEM", globalTimeZone2);
+                Assert.Equal("SYSTEM", sessionTimeZone2);
+            }
+        }
+    }
+
+    [Fact]
+    public void DefaultTimeZoneSetOnPooledNoReset()
+    {
+        int serverThread1;
+        // with a new connection string we'll actually create a different thread pool
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2;time_zone=+00:00"))
+        {
+            dbConn.Open();
+            serverThread1 = dbConn.ServerThread;
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // test with our default time_zone setting
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+00:00", sessionTimeZone);
+        }
+        Thread.Sleep(2);
+
+        int serverThread2;
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2;time_zone=+00:00"))
+        {
+            dbConn.Open();
+            serverThread2 = dbConn.ServerThread;
+
+            // we should get back the same pooled connection
+            Assert.Equal(serverThread1, serverThread2);
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+00:00", sessionTimeZone);
+
+            // set session time_zone for pooled connection
+            using (var dbCmd = new MySqlCommand("SET @@session.time_zone = '+04:00'", dbConn))
+            {
+                dbCmd.ExecuteNonQuery();
+            }
+        }
+        Thread.Sleep(2);
+
+        int serverThread3;
+        using (var dbConn = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2;time_zone=+00:00"))
+        {
+            dbConn.Open();
+            serverThread3 = dbConn.ServerThread;
+
+            // we should get back the same pooled connection
+            Assert.Equal(serverThread2, serverThread3);
+
+            String globalTimeZone = null,
+                   sessionTimeZone = null;
+            using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn))
+            using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+            {
+                if (dbReader.Read())
+                {
+                    globalTimeZone = dbReader.GetString("global");
+                    sessionTimeZone = dbReader.GetString("session");
+                }
+            }
+
+            // we should get back the changed time_zone from previous pooled connnection but
+            // the default time_zone has NOT been set because we don't reset the connection
+            Assert.Equal("SYSTEM", globalTimeZone);
+            Assert.Equal("+04:00", sessionTimeZone);
+
+            using (var dbConn2 = new MySqlConnection(st.GetConnectionString(true, true, false) + ";maxpoolsize=2;time_zone=+00:00"))
+            {
+                dbConn2.Open();
+
+                // we should see a new server thread
+                Assert.NotEqual(serverThread3, dbConn2.ServerThread);
+
+                String globalTimeZone2 = null,
+                       sessionTimeZone2 = null;
+                using (var dbCmd = new MySqlCommand("SELECT @@global.time_zone AS global, @@session.time_zone AS session", dbConn2))
+                using (var dbReader = dbCmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (dbReader.Read())
+                    {
+                        globalTimeZone2 = dbReader.GetString("global");
+                        sessionTimeZone2 = dbReader.GetString("session");
+                    }
+                }
+
+                // the only other connection in our pool should have the default time_zone from conn string
+                Assert.Equal("SYSTEM", globalTimeZone2);
+                Assert.Equal("+00:00", sessionTimeZone2);
+            }
+        }
+    }
   }
 }

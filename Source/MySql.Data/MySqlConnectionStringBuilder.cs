@@ -165,6 +165,7 @@ namespace MySql.Data.MySqlClient
 #if !CF
       options.Add(new MySqlConnectionStringOption("sslmode", "ssl mode", typeof(MySqlSslMode), MySqlSslMode.None, false));
 #endif
+      options.Add(new MySqlConnectionStringOption("time_zone", "DefaultTimeZone,Default Time Zone", typeof(string), "", false));
     }
 
     public MySqlConnectionStringBuilder()
@@ -924,6 +925,17 @@ namespace MySql.Data.MySqlClient
 #endif
 
     #endregion
+
+    [Category("Advanced")]
+    [DisplayName("Default Time Zone")]
+    [Description("Change default time zone for all connections. Sets the time_zone variable for both global and current session." +
+        "If not set default to mysqld setting (likely SYSTEM).")]
+    [DefaultValue("")]
+    public String DefaultTimeZone
+    {
+        get { return (string)values["time_zone"]; }
+        set { SetValue("time_zone", value); }
+    }
 
     #region Backwards compatibility properties
     [DisplayName("Use Default Command Timeout For EF")]
