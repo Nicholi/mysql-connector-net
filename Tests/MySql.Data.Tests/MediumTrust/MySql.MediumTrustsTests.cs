@@ -18,7 +18,7 @@ namespace MySql.Data.MySqlClient.Tests.Xunit
  public class MySqlMediumTrustTests : MarshalByRefObject
   {   
    
-    [Fact(Skip = "Localhost conn")]
+    [Fact(Skip = "Not using SetupWeb to assert different credentials")]
     public void TestConnectionStrings()
     {      
       MySqlConnection c = new MySqlConnection();

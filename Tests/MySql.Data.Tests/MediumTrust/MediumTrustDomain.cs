@@ -28,15 +28,15 @@ namespace MySql.Data.MySqlClient.Tests
       {
         if (item.Name.Contains("MySql.Data"))
         {
-          if (item.Version == new Version(6, 7))
-#if CLR4
-            fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\Source\MySql.Data\bin\v4.0\Release\MySql.Data.dll");
+#if NET_451_OR_GREATER
+          fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\..\Source\MySql.Data\bin\v4.5.1\Release\MySql.Data.dll");
+#elif NET_45_OR_GREATER
+          fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\..\Source\MySql.Data\bin\v4.5\Release\MySql.Data.dll");
+#elif NET_40_OR_GREATER
+          fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\..\Source\MySql.Data\bin\v4.0\Release\MySql.Data.dll");
 #else
-            fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\Source\MySql.Data\bin\v4.5\Release\MySql.Data.dll");                   
+          fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\..\Source\MySql.Data\bin\v3.5\Release\MySql.Data.dll");
 #endif
-          else
-            fullPathAssembly = @Path.GetFullPath(@".\..\..\..\..\Source\MySql.Data\bin\Release\MySql.Data.dll");
-          break;
         }
       }   
       if (!string.IsNullOrEmpty(fullPathAssembly))
@@ -97,7 +97,11 @@ namespace MySql.Data.MySqlClient.Tests
       commandLineParams.AppendFormat("/i \"{0}\"", fullPathAssembly);
 
       ProcessStartInfo processStartInfo = new ProcessStartInfo();
-#if NET_40_OR_GREATER
+#if NET_451_OR_GREATER
+      command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToString() + @"\Microsoft SDKs\Windows\v8.1A\Bin\NETFX 4.5.1 Tools\" + "gacutil.exe");
+#elif NET_45_OR_GREATER
+      command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToString() + @"\Microsoft SDKs\Windows\v8.0A\Bin\NETFX 4.0 Tools\" + "gacutil.exe");
+#elif NET_40_OR_GREATER
       command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToString() + @"\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\" + "gacutil.exe");
 #else
       command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles).ToString() + @"\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\" + "gacutil.exe");
@@ -119,7 +123,11 @@ namespace MySql.Data.MySqlClient.Tests
       commandLineParams.AppendFormat("/u \"{0}\"", "mysql.data");
 
       ProcessStartInfo processStartInfo = new ProcessStartInfo();
-#if NET_40_OR_GREATER
+#if NET_451_OR_GREATER
+      command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToString() + @"\Microsoft SDKs\Windows\v8.1A\Bin\NETFX 4.5.1 Tools\" + "gacutil.exe");
+#elif NET_45_OR_GREATER
+      command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToString() + @"\Microsoft SDKs\Windows\v8.0A\Bin\NETFX 4.0 Tools\" + "gacutil.exe");
+#elif NET_40_OR_GREATER
       command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToString() + @"\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\" + "gacutil.exe");
 #else
       command.AppendFormat("\"{0}\"", @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles).ToString() + @"\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\" + "gacutil.exe");

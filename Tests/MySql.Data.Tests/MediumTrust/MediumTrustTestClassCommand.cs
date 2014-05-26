@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MySql.Data.MySqlClient.Tests.Xunit.MediumTrust;
 using Xunit.Sdk;
+using Xunit;
 
 namespace MySql.Data.MySqlClient.Tests.Xunit
 {
@@ -41,6 +42,14 @@ namespace MySql.Data.MySqlClient.Tests.Xunit
 
     public IEnumerable<ITestCommand> EnumerateTestCommands(IMethodInfo testMethod)
     {
+      foreach (var attr in testMethod.GetCustomAttributes(typeof(FactAttribute)))
+      {
+          if (!String.IsNullOrEmpty(attr.GetPropertyValue<String>("Skip")))
+          {
+              yield break;
+          }
+      }
+
       foreach (var testCommand in _cmd.EnumerateTestCommands(testMethod))
       {
         if (testCommand is MediumTrustTestCommand)
