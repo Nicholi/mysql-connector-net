@@ -874,6 +874,8 @@ namespace MySql.Web.Tests
       Assert.Equal(lastLogin.Kind, user.LastLoginDate.Kind);
       Assert.Equal(Truncate(lastLogin, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
 
+      testProv.DeleteUser("fab", true);
+
       ResumeConnectionString(savedCss);
     }
 
@@ -904,6 +906,8 @@ namespace MySql.Web.Tests
         user = testProv.GetUser("nab", false);
 
         Assert.Equal(Truncate(lastLogin, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate, TimeSpan.TicksPerSecond));
+
+        testProv.DeleteUser("nab", true);
     }
   }
 }
