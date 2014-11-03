@@ -48,7 +48,9 @@ namespace MySql.Data.MySqlClient
     MySqlTransaction curTransaction;
     string cmdText;
     CommandType cmdType;
+#pragma warning disable 414
     long updatedRowCount;
+#pragma warning restore 414
     MySqlParameterCollection parameters;
     private IAsyncResult asyncResult;
     internal Int64 lastInsertedId;
@@ -956,7 +958,7 @@ namespace MySql.Data.MySqlClient
       throw ex;
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
       if (statement != null && statement.IsPrepared)
         statement.CloseStatement();

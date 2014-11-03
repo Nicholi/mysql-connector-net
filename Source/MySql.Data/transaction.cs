@@ -75,7 +75,7 @@ namespace MySql.Data.MySqlClient
 
     #endregion
 
-    public void Dispose()
+    public new void Dispose()
     {
       if ((conn != null && conn.State == ConnectionState.Open || conn.SoftClosed) && open)
         Rollback();

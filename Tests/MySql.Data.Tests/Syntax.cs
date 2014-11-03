@@ -32,8 +32,9 @@ namespace MySql.Data.MySqlClient.Tests
   public class Syntax : IUseFixture<SetUpClass>, IDisposable
   {
     private SetUpClass st;
-
+#pragma warning disable 414
     private static string fillError = null;
+#pragma warning restore 414
 
 
     public void SetFixture(SetUpClass data)

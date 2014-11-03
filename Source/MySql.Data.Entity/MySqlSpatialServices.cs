@@ -408,7 +408,7 @@ namespace MySql.Data.Entity
 
     public override DbGeometry GeometryFromText(string wellKnownText)
     {
-      if (String.IsNullOrEmpty(wellKnownText) == null)
+      if (String.IsNullOrEmpty(wellKnownText))
         throw new ArgumentNullException("wellKnownText");
 
       var geomValue = DbGeometry.FromText(wellKnownText);

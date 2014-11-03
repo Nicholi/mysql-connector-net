@@ -177,6 +177,7 @@ namespace MySql.Data.MySqlClient.Authentication
     private string GetTargetName()
     {
       return null;
+#pragma warning disable 162
       if (AuthenticationData == null) return String.Empty;
 
       int index = -1;
@@ -195,6 +196,7 @@ namespace MySql.Data.MySqlClient.Authentication
       else
           targetName = System.Text.Encoding.UTF8.GetString(AuthenticationData, 0, index);
       return targetName;
+#pragma warning restore 162
     }
 
     private void AcquireCredentials()

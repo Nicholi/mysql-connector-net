@@ -1030,7 +1030,7 @@ namespace MySql.Data.MySqlClient
       throw ex;
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
       Close();
     }

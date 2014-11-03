@@ -3,6 +3,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
     <!--
     <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '10.0'">4.0</Framework>
     <Framework Condition=" '$(Framework)' == '' and '$(VisualStudioVersion)' == '11.0'">4.5</Framework>
@@ -88,9 +90,8 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
-    <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
-    <AssemblyName>MySql.Data.Entity</AssemblyName>
-    <AssemblyName Condition="$(Framework) == '4.5' Or $(Framework) == '4.5.1'">MySql.Data.Entity.EF5</AssemblyName>
+    <DefineConstants>DEBUG;$(DefineConstants);EF6</DefineConstants>
+    <AssemblyName>MySql.Data.Entity.EF6</AssemblyName>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -102,152 +103,26 @@
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <OutputPath>bin\$(TargetFrameworkVersion)\Release\</OutputPath>
-    <DefineConstants>$(DefineConstants)</DefineConstants>
-    <AssemblyName>MySql.Data.Entity</AssemblyName>
-    <AssemblyName Condition="$(Framework) == '4.5' Or $(Framework) == '4.5.1'">MySql.Data.Entity.EF5</AssemblyName>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
+    <AssemblyName>MySql.Data.Entity.EF6</AssemblyName>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugEF6|AnyCPU'">
-    <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
-    <DefineConstants>DEBUG;$(DefineConstants);EF6</DefineConstants>
-    <AssemblyName>MySql.Data.Entity.EF6</AssemblyName>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseEF6|AnyCPU'">
-    <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
-    <OutputPath>bin\$(TargetFrameworkVersion)\Release\</OutputPath>
-    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
-    <AssemblyName>MySql.Data.Entity.EF6</AssemblyName>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Choose>
-    <When Condition="'$(Framework)' == '4.5.1'">
-      <Choose>
-        <When Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0\lib\net45\EntityFramework.dll</HintPath>
-              <Private>False</Private>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 5.0.0\lib\net45\EntityFramework.dll</HintPath>
-              <Private>False</Private>
-            </Reference>
-            <Reference Include="System.Data.Entity" />
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
-      <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
-      </ItemGroup>
-    </When>
-    <When Condition="'$(Framework)' == '4.5'">
-      <Choose>
-        <When Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0\lib\net45\EntityFramework.dll</HintPath>
-              <Private>False</Private>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 5.0.0\lib\net45\EntityFramework.dll</HintPath>
-              <Private>False</Private>
-            </Reference>
-            <Reference Include="System.Data.Entity" />
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
-      <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
-      </ItemGroup>
-    </When>
-    <When Condition="'$(Framework)' == '4.0'">
-      <Choose>
-        <When Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 6.0.0\lib\net40\EntityFramework.dll</HintPath>
-              <Private>False</Private>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="EntityFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-              <SpecificVersion>False</SpecificVersion>
-              <HintPath>C:\Program Files (x86)\Microsoft ADO.NET Entity Framework 5.0.0\lib\net40\EntityFramework.dll</HintPath>
-              <Private>False</Private>
-            </Reference>
-            <Reference Include="System.Data.Entity" />          
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
-      <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
-      </ItemGroup>
-    </When>
-    <When Condition="'$(Framework)' == '3.5'">
-      <ItemGroup>
-        <Reference Include="System.Data.Linq">
-          <RequiredTargetFramework>3.5</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="System.Core">
-          <RequiredTargetFramework>3.5</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="System" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Runtime.Serialization" />
-        <Reference Include="System.Data.Entity">
-          <RequiredTargetFramework>3.5</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="System.Xml" />
-      </ItemGroup>
-    </When>
-  </Choose>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\SchemaMapping.msl" />
     <Compile Include="..\MySql.Data\Properties\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
-    <!-- <Compile Include="EF6\MySqlClientFactory.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
-    <Compile Include="EF6\MySqlCommandDefinition.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" /> -->
+    <!-- <Compile Include="EF6\MySqlClientFactory.cs" />
+    <Compile Include="EF6\MySqlCommandDefinition.cs" /> -->
     <Compile Include="EFMySqlCommand.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -266,12 +141,12 @@
     <Compile Include="Generators\SelectGenerator.cs" />
     <Compile Include="Generators\SqlGenerator.cs" />
     <Compile Include="Generators\UpdateGenerator.cs" />
-    <Compile Include="MySqlEFConfiguration.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
+    <Compile Include="MySqlEFConfiguration.cs" />
     <Compile Include="MySqlConnectionFactory.cs" Condition="'$(Framework)' == '4.0' or $(Framework) == '4.5' or $(Framework) == '4.5.1'" />
-    <Compile Include="MySqlDependencyResolver.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
-    <Compile Include="MySqlExecutionStrategy.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
-    <Compile Include="MySqlHistoryContext.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
-    <Compile Include="MySqlLogger.cs" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'" />
+    <Compile Include="MySqlDependencyResolver.cs" />
+    <Compile Include="MySqlExecutionStrategy.cs" />
+    <Compile Include="MySqlHistoryContext.cs" />
+    <Compile Include="MySqlLogger.cs" />
     <Compile Include="MySqlMigrationSqlGenerator.cs" Condition="'$(Framework)' == '4.0' or '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1'" />
     <Compile Include="MySqlSpatialServices.cs" Condition="( '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1') " />
     <Compile Include="MySqlSpatialDataReader.cs" Condition="( '$(Framework)' == '4.5' or '$(Framework)' == '4.5.1') " />
@@ -310,9 +185,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Security" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(Framework)' == '4.5' or '$(Framework)' == '4.5.1'">
       <ItemGroup>
@@ -341,4 +225,11 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
 </Project>

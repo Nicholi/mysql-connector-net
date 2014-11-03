@@ -77,7 +77,9 @@ namespace MySql.Data.MySqlClient.Tests
       Assert.Equal(false, sb.UseCompression);
       Assert.Equal("MYSQL", sb.PipeName);
       Assert.False(sb.Logging);
+#pragma warning disable 618
       Assert.False(sb.UseOldSyntax);
+#pragma warning restore 618
       Assert.True(sb.AllowBatch);
       Assert.False(sb.ConvertZeroDateTime);
       Assert.Equal("MYSQL", sb.SharedMemoryName);

@@ -535,7 +535,9 @@ namespace MySql.Web.SessionState
       // True if a record is found in the database.
       bool foundRecord = false;
       // True if the returned session item is expired and needs to be deleted.
+#pragma warning disable 219
       bool deleteData = false;
+#pragma warning restore 219
       // Timeout value from the data store.
       int timeout = 0;
 

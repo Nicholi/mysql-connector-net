@@ -36,7 +36,9 @@ namespace MySql.Data.Common
     string hostList;
     uint port;
     string pipeName;
+#pragma warning disable 169
     uint timeOut;
+#pragma warning restore 169
     uint keepalive;
     DBVersion driverVersion;
 
