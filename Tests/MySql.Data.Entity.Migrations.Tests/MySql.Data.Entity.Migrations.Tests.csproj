@@ -56,7 +56,7 @@
     <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
-    <OutputPath>bin\$(TargetFrameworkVersion)\DebugEF6\</OutputPath>
+    <OutputPath>bin\$(TargetFrameworkVersion)\Debug\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DefineConstants>DEBUG;TRACE;$(DefineConstants);EF6</DefineConstants>
@@ -67,7 +67,7 @@
     <BaseOutputPath>$(TargetFrameworkVersion)\</BaseOutputPath>
     <BaseIntermediateOutputPath>obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\</IntermediateOutputPath>
-    <OutputPath>bin\$(TargetFrameworkVersion)\ReleaseEF6\</OutputPath>
+    <OutputPath>bin\$(TargetFrameworkVersion)\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DefineConstants>TRACE;$(DefineConstants);EF6</DefineConstants>
