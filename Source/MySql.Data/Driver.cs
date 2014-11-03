@@ -1,4 +1,4 @@
-// Copyright © 2004, 2013, Oracle and/or its affiliates. All rights reserved.
+// Copyright © 2004, 2013, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -59,6 +59,7 @@ namespace MySql.Data.MySqlClient
     protected IDriver handler;
     internal MySqlDataReader reader;
     private bool disposeInProgress;
+    internal bool isFabric;
 
     /// <summary>
     /// For pooled connections, time when the driver was
@@ -214,7 +215,17 @@ namespace MySql.Data.MySqlClient
       if (d == null)
         d = new Driver(settings);
 
-      d.Open();
+      //this try was added as suggested fix submitted on MySql Bug 72025, socket connections are left in CLOSE_WAIT status when connector fails to open a new connection.
+      //the bug is present when the client try to get more connections that the server support or has configured in the max_connections variable.
+      try
+      {
+        d.Open();
+      }
+      catch
+      {
+        d.Dispose();
+        throw;
+      }
       return d;
     }
 
@@ -287,7 +298,7 @@ namespace MySql.Data.MySqlClient
       string charSet = connectionString.CharacterSet;
       if (charSet == null || charSet.Length == 0)
       {
-        if (serverCharSetIndex >= 0)
+        if (serverCharSetIndex >= 0 && charSets.ContainsKey(serverCharSetIndex))
           charSet = (string)charSets[serverCharSetIndex];
         else
           charSet = serverCharSet;
@@ -301,8 +312,11 @@ namespace MySql.Data.MySqlClient
       MySqlCommand charSetCmd = new MySqlCommand("SET character_set_results=NULL",
                         connection);
       charSetCmd.InternallyCreated = true;
-      object clientCharSet = serverProps["character_set_client"];
-      object connCharSet = serverProps["character_set_connection"];
+
+      string clientCharSet;
+      serverProps.TryGetValue("character_set_client", out clientCharSet);
+      string connCharSet;
+      serverProps.TryGetValue("character_set_connection", out connCharSet);
       if ((clientCharSet != null && clientCharSet.ToString() != charSet) ||
         (connCharSet != null && connCharSet.ToString() != charSet))
       {
@@ -355,7 +369,9 @@ namespace MySql.Data.MySqlClient
     private int GetTimeZoneOffset( MySqlConnection con )
     {
       MySqlCommand cmd = new MySqlCommand("select timediff( curtime(), utc_time() )", con);
-      string s = cmd.ExecuteScalar().ToString();
+      string s = cmd.ExecuteScalar() as string;
+      if (s == null) s = "0:00";
+
       return int.Parse(s.Substring(0, s.IndexOf(':') ));
     }
 

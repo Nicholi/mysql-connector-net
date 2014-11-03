@@ -1,4 +1,4 @@
-﻿// Copyright © 2008, 2013 Oracle and/or its affiliates. All rights reserved.
+﻿// Copyright © 2008, 2014 Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -49,13 +49,55 @@ namespace MySql.Data.Entity
   /// </summary>
   public class MySqlMigrationCodeGenerator : CSharpMigrationCodeGenerator
   {
-
+    private IEnumerable<KeyValuePair<CreateTableOperation, AddForeignKeyOperation>> _foreignKeys;
+    private IEnumerable<KeyValuePair<CreateTableOperation, CreateIndexOperation>> _tableIndexes;
+    
     private string TrimSchemaPrefix(string table)
     {
       if (table.StartsWith("dbo."))
         return table.Replace("dbo.", "");
 
       return table;
+    }
+
+    private string PrepareSql(string sql, bool removeNonMySqlChars)
+    {
+      var sqlResult = sql;
+      if (removeNonMySqlChars)
+      {
+        sqlResult = sql.Replace("[", "").Replace("]", "").Replace("@", "");
+      }
+      sqlResult = sqlResult.Replace("dbo.", "");
+      return sqlResult;
+    }
+
+    private IEnumerable<MigrationOperation> ReorderOperations(IEnumerable<MigrationOperation> operations)
+    {
+      if (operations.Where(operation => operation.GetType() == typeof(AddPrimaryKeyOperation)).Count() > 0 &&
+          operations.Where(operation => operation.GetType() == typeof(DropPrimaryKeyOperation)).Count() > 0)
+      {
+        List<MigrationOperation> reorderedOpes = new List<MigrationOperation>();
+        reorderedOpes.AddRange(operations.Where(operation => operation.GetType() == typeof(AlterColumnOperation)));
+        reorderedOpes.AddRange(operations.Where(operation => operation.GetType() == typeof(DropPrimaryKeyOperation)));
+        reorderedOpes.AddRange(operations.Where(operation => operation.GetType() != typeof(DropPrimaryKeyOperation) && operation.GetType() != typeof(AlterColumnOperation)));
+        return reorderedOpes;
+      }
+      return operations;
+    }
+
+    public override ScaffoldedMigration Generate(string migrationId, IEnumerable<MigrationOperation> operations, string sourceModel, string targetModel, string @namespace, string className)
+    {
+      _foreignKeys = (from tbl in operations.OfType<CreateTableOperation>()
+                      from fk in operations.OfType<AddForeignKeyOperation>()
+                      where tbl.Name.Equals(fk.DependentTable, StringComparison.InvariantCultureIgnoreCase)
+                      select new KeyValuePair<CreateTableOperation, AddForeignKeyOperation>(tbl, fk)).ToList();
+
+      _tableIndexes = (from tbl in operations.OfType<CreateTableOperation>()
+                       from idx in operations.OfType<CreateIndexOperation>()
+                       where tbl.Name.Equals(idx.Table, StringComparison.InvariantCultureIgnoreCase)
+                       select new KeyValuePair<CreateTableOperation, CreateIndexOperation>(tbl, idx)).ToList();
+
+      return base.Generate(migrationId, ReorderOperations(operations), sourceModel, targetModel, @namespace, className);
     }
 
     protected override void Generate(AddColumnOperation addColumnOperation, IndentedTextWriter writer)
@@ -67,8 +109,17 @@ namespace MySql.Data.Entity
     protected override void Generate(AddForeignKeyOperation addForeignKeyOperation, IndentedTextWriter writer)
     {
       addForeignKeyOperation.PrincipalTable = TrimSchemaPrefix(addForeignKeyOperation.PrincipalTable);
-      addForeignKeyOperation.DependentTable = TrimSchemaPrefix(addForeignKeyOperation.DependentTable);      
+      addForeignKeyOperation.DependentTable = TrimSchemaPrefix(addForeignKeyOperation.DependentTable);
+      addForeignKeyOperation.Name = PrepareSql(addForeignKeyOperation.Name, false);
       base.Generate(addForeignKeyOperation, writer);
+    }
+
+    protected override void GenerateInline(AddForeignKeyOperation addForeignKeyOperation, IndentedTextWriter writer)
+    {
+      writer.WriteLine();
+      writer.Write(".ForeignKey(\"" + TrimSchemaPrefix(addForeignKeyOperation.PrincipalTable) + "\", ");
+      Generate(addForeignKeyOperation.DependentColumns, writer);
+      writer.Write(addForeignKeyOperation.CascadeDelete ? ", cascadeDelete: true)" : ")");
     }
 
     protected override void Generate(AddPrimaryKeyOperation addPrimaryKeyOperation, IndentedTextWriter writer)
@@ -97,6 +148,19 @@ namespace MySql.Data.Entity
       base.Generate(createIndexOperation, writer);
     }
 
+    protected override void GenerateInline(CreateIndexOperation createIndexOperation, IndentedTextWriter writer)
+    {
+      writer.WriteLine();
+      writer.Write(".Index(");
+
+      Generate(createIndexOperation.Columns, writer);
+
+      writer.Write(createIndexOperation.IsUnique ? ", unique: true" : "");
+      writer.Write(!createIndexOperation.HasDefaultName ? string.Format(", name: {0}", TrimSchemaPrefix(createIndexOperation.Name)) : "");
+
+      writer.Write(")");
+    }
+
     protected override void Generate(CreateTableOperation createTableOperation, IndentedTextWriter writer)
     {
       var create = new CreateTableOperation(TrimSchemaPrefix(createTableOperation.Name));
@@ -107,6 +171,18 @@ namespace MySql.Data.Entity
       create.PrimaryKey = createTableOperation.PrimaryKey;
 
       base.Generate(create, writer);
+
+      System.IO.StringWriter innerWriter = writer.InnerWriter as System.IO.StringWriter;
+      if (innerWriter != null)
+      {
+        innerWriter.GetStringBuilder().Remove(innerWriter.ToString().LastIndexOf(";"), innerWriter.ToString().Length - innerWriter.ToString().LastIndexOf(";"));
+        writer.Indent++;
+        _foreignKeys.Where(tbl => tbl.Key == createTableOperation).ToList().ForEach(fk => GenerateInline(fk.Value, writer));
+        _tableIndexes.Where(tbl => tbl.Key == createTableOperation).ToList().ForEach(idx => GenerateInline(idx.Value, writer));
+        writer.WriteLine(";");
+        writer.Indent--;
+        writer.WriteLine();
+      }
     }
 
     protected override void Generate(DropColumnOperation dropColumnOperation, IndentedTextWriter writer)
@@ -119,6 +195,7 @@ namespace MySql.Data.Entity
     {
       dropForeignKeyOperation.PrincipalTable = TrimSchemaPrefix(dropForeignKeyOperation.PrincipalTable);
       dropForeignKeyOperation.DependentTable = TrimSchemaPrefix(dropForeignKeyOperation.DependentTable);
+      dropForeignKeyOperation.Name = PrepareSql(dropForeignKeyOperation.Name, false);
       base.Generate(dropForeignKeyOperation, writer);
     }
 
@@ -173,6 +250,7 @@ namespace MySql.Data.Entity
     private string _providerManifestToken;
 	private List<string> autoIncrementCols { get; set; }
     private List<string> primaryKeyCols { get; set; }
+    private IEnumerable<AddPrimaryKeyOperation> _pkOperations;
 
     delegate MigrationStatement OpDispatcher(MigrationOperation op);
 
@@ -214,6 +292,10 @@ namespace MySql.Data.Entity
       List<MigrationStatement> stmts = new List<MigrationStatement>();
       _providerManifestToken = providerManifestToken;
       _providerManifest = DbProviderServices.GetProviderServices(con).GetProviderManifest(providerManifestToken);
+      
+      //verify if there is one or more add/alter column operation, if there is then look for primary key operations. Alter in case that the user wants to change the current PK column
+      if ((from cols in migrationOperations.OfType<AddColumnOperation>() select cols).Count() > 0 || (from cols in migrationOperations.OfType<AlterColumnOperation>() select cols).Count() > 0)
+        _pkOperations = (from pks in migrationOperations.OfType<AddPrimaryKeyOperation>() select pks).ToList();
 
       foreach (MigrationOperation op in migrationOperations)
       {
@@ -226,7 +308,7 @@ namespace MySql.Data.Entity
       {
         foreach (var item in _specialStmts)
           stmts.Add(item);
-      }        	        
+      }
       return stmts;
     }
 
@@ -459,8 +541,16 @@ namespace MySql.Data.Entity
       _tableName = op.Table;
 
       MigrationStatement stmt = new MigrationStatement();
-      stmt.Sql = string.Format("alter table `{0}` add column `{1}`",
-        TrimSchemaPrefix(op.Table), op.Column.Name) + " " + Generate(op.Column);
+      //verify if there is any "AddPrimaryKeyOperation" related with the column that will be added and if it is defined as identity (auto_increment)
+      bool uniqueAttr = (from pkOpe in _pkOperations
+                         where (from col in pkOpe.Columns 
+                                where col == op.Column.Name 
+                                select col).Count() > 0
+                         select pkOpe).Count() > 0 & op.Column.IsIdentity;
+
+      //if the column to be added is PK as well as identity we need to specify the column as unique to avoid the error: "Incorrect table definition there can be only one auto column and it must be defined as a key", since unique and PK are almost equivalent we'll be able to add the new column and later add the PK related to it, this because the "AddPrimaryKeyOperation" is executed after the column is added
+      stmt.Sql = string.Format("alter table `{0}` add column `{1}` {2} {3}", TrimSchemaPrefix(op.Table), op.Column.Name, Generate(op.Column), (uniqueAttr ? " unique " : ""));
+
       return stmt;
     }
 
@@ -483,11 +573,18 @@ namespace MySql.Data.Entity
       StringBuilder sb = new StringBuilder();
       _tableName = op.Table;
 
+      //verify if there is any "AddPrimaryKeyOperation" related with the column that will be added and if it is defined as identity (auto_increment)
+      bool uniqueAttr = (from pkOpe in _pkOperations
+                         where (from col in pkOpe.Columns
+                                where col == op.Column.Name
+                                select col).Count() > 0
+                         select pkOpe).Count() > 0 & op.Column.IsIdentity;
+
       // for existing columns
       sb.Append("alter table `" + TrimSchemaPrefix(op.Table) + "` modify `" + column.Name + "` ");
 
       // add definition
-      sb.Append(Generate(column));
+      sb.Append(Generate(column) + (uniqueAttr ? " unique " : ""));
 
       return new MigrationStatement { Sql = sb.ToString() };
     }
@@ -516,7 +613,12 @@ namespace MySql.Data.Entity
     {
 
       StringBuilder sb = new StringBuilder();
-      sb.Append("alter table `" + TrimSchemaPrefix(op.DependentTable) + "` add constraint `" + TrimSchemaPrefix(op.Name) + "` " +
+      string fkName = op.Name;
+      if (fkName.Length > 64)
+      {
+        fkName = "FK_" + Guid.NewGuid().ToString().Replace("-", "");
+      }
+      sb.Append("alter table `" + TrimSchemaPrefix(op.DependentTable) + "` add constraint `" + TrimSchemaPrefix(fkName) + "` " +
                  " foreign key ");
 
       sb.Append("(" + string.Join(",", op.DependentColumns.Select(c => "`" + c + "`")) + ") ");
@@ -534,7 +636,15 @@ namespace MySql.Data.Entity
     {
       TypeUsage typeUsage = _providerManifest.GetStoreType(op.TypeUsage);
       StringBuilder sb = new StringBuilder();
+#if EF6
+      string type = op.StoreType;
+      if (type == null)
+      {
+        type = MySqlProviderServices.Instance.GetColumnType(typeUsage);
+      }
+#else
       string type = MySqlProviderServices.Instance.GetColumnType(typeUsage);
+#endif
 
       sb.Append(type);      
 
@@ -568,9 +678,13 @@ namespace MySql.Data.Entity
         }         
       }      
 
+      op.StoreType = type;
+
       if (!(op.IsNullable ?? true))
       {
-        sb.Append(string.Format("{0} not null ", ((!primaryKeyCols.Contains(op.Name) && op.IsIdentity) ? " unsigned" : "")));
+        sb.Append(string.Format("{0} not null ", 
+          ((!primaryKeyCols.Contains(op.Name) && op.IsIdentity && op.Type != PrimitiveTypeKind.Guid ) ? " unsigned" : 
+          (( op.Type == PrimitiveTypeKind.Guid )? " default '' " : "" ) )));
       }
       if (op.IsIdentity && (new string[] { "tinyint", "smallint", "mediumint", "int", "bigint" }).Contains(type.ToLower()))
       {
@@ -579,20 +693,7 @@ namespace MySql.Data.Entity
       }
       else
       {
-        if (op.IsIdentity && String.Compare(type, "CHAR(36) BINARY", true) == 0)
-        {
-          var createTrigger = new StringBuilder();
-          createTrigger.AppendLine(string.Format("DROP TRIGGER IF EXISTS `{0}_IdentityTgr`;", TrimSchemaPrefix(_tableName)));
-          createTrigger.AppendLine(string.Format("CREATE TRIGGER `{0}_IdentityTgr` BEFORE INSERT ON `{0}`", TrimSchemaPrefix(_tableName)));
-          createTrigger.AppendLine("FOR EACH ROW BEGIN");
-          createTrigger.AppendLine(string.Format("SET NEW.{0} = UUID();", op.Name));
-          createTrigger.AppendLine(string.Format("DROP TEMPORARY TABLE IF EXISTS tmpIdentity_{0};", TrimSchemaPrefix(_tableName)));
-          createTrigger.AppendLine(string.Format("CREATE TEMPORARY TABLE tmpIdentity_{0} (guid CHAR(36))ENGINE=MEMORY;", TrimSchemaPrefix(_tableName)));
-          createTrigger.AppendLine(string.Format("INSERT INTO tmpIdentity_{0} VALUES(New.{1});", TrimSchemaPrefix(_tableName), op.Name));
-          createTrigger.AppendLine("END");
-          var sqlOp = new SqlOperation(createTrigger.ToString());
-          _specialStmts.Add(Generate(sqlOp));
-        }
+        // nothing
       }
       if (!string.IsNullOrEmpty(op.DefaultValueSql))
       {
@@ -675,6 +776,38 @@ namespace MySql.Data.Entity
 
       //columns
       sb.Append(string.Join(",", op.Columns.Select(c => "`" + c.Name + "` " + Generate(c))));
+
+      // Determine columns that are GUID & identity
+      List<ColumnModel> guidCols = new List<ColumnModel>();
+      ColumnModel guidPK = null;
+      foreach( ColumnModel opCol in op.Columns )
+      {
+        if (opCol.Type == PrimitiveTypeKind.Guid && opCol.IsIdentity && String.Compare(opCol.StoreType, "CHAR(36) BINARY", true) == 0)
+        {
+          if( primaryKeyCols.Contains( opCol.Name ) )
+            guidPK = opCol;
+          guidCols.Add(opCol);
+        } 
+      }
+
+      if (guidCols.Count != 0)
+      {
+        var createTrigger = new StringBuilder();
+        createTrigger.AppendLine(string.Format("DROP TRIGGER IF EXISTS `{0}_IdentityTgr`;", TrimSchemaPrefix(_tableName)));
+        createTrigger.AppendLine(string.Format("CREATE TRIGGER `{0}_IdentityTgr` BEFORE INSERT ON `{0}`", TrimSchemaPrefix(_tableName)));
+        createTrigger.AppendLine("FOR EACH ROW BEGIN");
+        for (int i = 0; i < guidCols.Count; i++)
+        {
+          ColumnModel opCol = guidCols[i];
+          createTrigger.AppendLine(string.Format("SET NEW.{0} = UUID();", opCol.Name));
+        }
+        createTrigger.AppendLine(string.Format("DROP TEMPORARY TABLE IF EXISTS tmpIdentity_{0};", TrimSchemaPrefix(_tableName)));
+        createTrigger.AppendLine(string.Format("CREATE TEMPORARY TABLE tmpIdentity_{0} (guid CHAR(36))ENGINE=MEMORY;", TrimSchemaPrefix(_tableName)));
+        createTrigger.AppendLine(string.Format("INSERT INTO tmpIdentity_{0} VALUES(New.{1});", TrimSchemaPrefix(_tableName), guidPK.Name));
+        createTrigger.AppendLine("END");
+        var sqlOp = new SqlOperation(createTrigger.ToString());
+        _specialStmts.Add(Generate(sqlOp));
+      }
 
       if (op.PrimaryKey != null)// && !sb.ToString().Contains("primary key"))
       {

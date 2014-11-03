@@ -1,4 +1,4 @@
-// Copyright © 2004, 2010, Oracle and/or its affiliates. All rights reserved.
+// Copyright © 2004, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -126,6 +126,8 @@ namespace MySql.Web.Security
       AddMembershipProvider(doc);
       AddRoleProvider(doc);
       AddProfileProvider(doc);
+      AddSiteMapProvider(doc);
+	  AddPersonalizationProvider(doc);
 
       // Save the document to a file and auto-indent the output.
       XmlTextWriter writer = new XmlTextWriter(configFile, null);
@@ -271,6 +273,113 @@ namespace MySql.Web.Security
       providerList.AppendChild(newNode);
     }
 
+    private void AddSiteMapProvider(XmlDocument doc)
+    {
+      // create our new node
+      XmlElement newNode = (XmlElement)doc.CreateNode(XmlNodeType.Element, "add", "");
+
+      // add the proper attributes
+      newNode.SetAttribute("name", "MySqlSiteMapProvider");
+
+      // add the type attribute by reflecting on the executing assembly
+      Assembly a = Assembly.GetExecutingAssembly();
+      string type = String.Format("MySql.Web.SiteMap.MySqlSiteMapProvider, {0}",
+          a.FullName.Replace("Installers", "Web"));
+      newNode.SetAttribute("type", type);
+
+      newNode.SetAttribute("connectionStringName", "LocalMySqlServer");
+      newNode.SetAttribute("applicationName", "/");
+
+      XmlNodeList nodes = doc.GetElementsByTagName("siteMap");
+
+      // It may not exists initially
+      if (nodes == null || nodes.Count == 0)
+      {
+        XmlNodeList nodesRoot = doc.GetElementsByTagName("system.web");
+        XmlElement node = (XmlElement)doc.CreateNode(XmlNodeType.Element, "siteMap", "");
+        //node.SetAttribute("enabled", "true");
+        XmlElement node2 = (XmlElement)doc.CreateNode(XmlNodeType.Element, "providers", "");
+        node.AppendChild(node2);
+        nodesRoot[0].AppendChild(node);
+        nodes = doc.GetElementsByTagName("siteMap");
+      }
+      XmlNode providerList = nodes[0].FirstChild;
+
+      foreach (XmlNode node in providerList.ChildNodes)
+      {
+        string typeValue = node.Attributes["type"].Value;
+        if (typeValue.StartsWith("MySql.Web.SiteMap.MySqlSiteMapProvider", StringComparison.OrdinalIgnoreCase))
+        {
+          providerList.RemoveChild(node);
+          break;
+        }
+      }
+      providerList.AppendChild(newNode);
+    }
+
+	
+	private void AddPersonalizationProvider(XmlDocument doc)
+    {
+      XmlElement webpartNode = null;
+
+      //check if webpart node exists
+      try
+      {        
+        if (doc.GetElementsByTagName("webParts").Count == 0)
+        {
+          webpartNode = (XmlElement)doc.CreateNode(XmlNodeType.Element, "webParts", "");
+          var personalizationNode = (XmlElement)doc.CreateNode(XmlNodeType.Element, "personalization", "");
+          personalizationNode.AppendChild((XmlElement)doc.CreateNode(XmlNodeType.Element, "providers", ""));
+          webpartNode.AppendChild(personalizationNode);
+
+        }
+        else
+        {
+          webpartNode = (XmlElement)doc.GetElementsByTagName("webParts")[0];
+        }
+      }
+      catch { }
+      
+      
+      // create our new node
+      XmlElement newNode = (XmlElement)doc.CreateNode(XmlNodeType.Element, "add", "");
+
+      // add the proper attributes
+      newNode.SetAttribute("name", "MySQLPersonalizationProvider");
+
+      // add the type attribute by reflecting on the executing assembly
+      Assembly a = Assembly.GetExecutingAssembly();
+      string type = String.Format("MySql.Web.Personalization.MySqlPersonalizationProvider, {0}",
+          a.FullName.Replace("Installers", "Web"));
+      newNode.SetAttribute("type", type);
+
+      newNode.SetAttribute("connectionStringName", "LocalMySqlServer");
+      newNode.SetAttribute("applicationName", "/");
+
+      XmlNodeList systemWeb = doc.GetElementsByTagName("system.web");
+      systemWeb[0].AppendChild(webpartNode);
+
+      XmlNodeList nodes = doc.GetElementsByTagName("personalization");
+      XmlNode providerPersonalizationList = nodes[0].FirstChild;
+
+
+      if (providerPersonalizationList!= null && providerPersonalizationList.ChildNodes!= null)
+      {
+        foreach (XmlNode node in providerPersonalizationList.ChildNodes)
+        {
+          string typeValue = node.Attributes["type"].Value;
+          if (typeValue.StartsWith("MySql.Web.Personalization.MySqlPersonalizationProvider", StringComparison.OrdinalIgnoreCase))
+          {
+            providerPersonalizationList.RemoveChild(node);
+            break;
+          }
+        }
+      }
+
+      providerPersonalizationList.AppendChild(newNode);
+    }
+
+		
     private void RemoveProviderFromMachineConfig()
     {
       object installRoot = Registry.GetValue(
@@ -306,6 +415,8 @@ namespace MySql.Web.Security
       RemoveMembershipProvider(doc);
       RemoveRoleProvider(doc);
       RemoveProfileProvider(doc);
+      RemoveSiteMapProvider(doc);
+	  RemovePersonalizationProvider(doc);
 
       // Save the document to a file and auto-indent the output.
       XmlTextWriter writer = new XmlTextWriter(configFile, null);
@@ -368,6 +479,36 @@ namespace MySql.Web.Security
       {
         string name = node.Attributes["name"].Value;
         if (name == "MySQLProfileProvider")
+        {
+          providersNode.RemoveChild(node);
+          break;
+        }
+      }
+    }
+
+    private void RemoveSiteMapProvider(XmlDocument doc)
+    {
+      XmlNodeList nodes = doc.GetElementsByTagName("siteMap");
+      XmlNode providersNode = nodes[0].FirstChild;
+      foreach (XmlNode node in providersNode.ChildNodes)
+      {
+        string name = node.Attributes["name"].Value;
+        if ( string.Compare( name, "MySqlSiteMapProvider", StringComparison.OrdinalIgnoreCase ) == 0 )
+        {
+          providersNode.RemoveChild(node);
+          break;
+        }
+      }
+    }
+	
+	private void RemovePersonalizationProvider(XmlDocument doc)
+    {
+      XmlNodeList nodes = doc.GetElementsByTagName("personalization");
+      XmlNode providersNode = nodes[0].FirstChild;
+      foreach (XmlNode node in providersNode.ChildNodes)
+      {
+        string name = node.Attributes["name"].Value;
+        if (name == "MySQLPersonalizationProvider")
         {
           providersNode.RemoveChild(node);
           break;
