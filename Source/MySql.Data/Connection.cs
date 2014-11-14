@@ -870,6 +870,7 @@ namespace MySql.Data.MySqlClient
     /// Async version of ChangeDataBase
     /// </summary>
     /// <param name="databaseName">The name of the database to use.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task ChangeDataBaseAsync(string databaseName, CancellationToken cancellationToken)
     {

@@ -388,7 +388,7 @@ namespace MySql.Web.Security
     public string ConnectionStringName
     { get; set; }
 
-    public string UserTableName
+    public new string UserTableName
     {
       get
       {
@@ -403,7 +403,7 @@ namespace MySql.Web.Security
       }
     }
 
-    public string UserIdColumn
+    public new string UserIdColumn
     {
       get
       {
@@ -418,7 +418,7 @@ namespace MySql.Web.Security
       }
     }
 
-    public string UserNameColumn
+    public new string UserNameColumn
     {
       get
       {

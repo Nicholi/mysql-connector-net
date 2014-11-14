@@ -201,6 +201,7 @@ namespace MySql.Web.Security
     /// <param name="userIdColumn">Column name defined that will store the user id</param>
     /// <param name="userNameColumn">Column name defined that will store the user name</param>
     /// <param name="createTables">Create tables?</param>
+    /// <param name="checkIfInitialized"></param>
     public static void InitializeDatabaseConnection(string connectionStringName, string userTableName, string userIdColumn, string userNameColumn, bool createTables, bool checkIfInitialized = false)
     {
       InitializeMembershipProvider(connectionStringName, null, null, userTableName, userIdColumn, userNameColumn, createTables, checkIfInitialized);
