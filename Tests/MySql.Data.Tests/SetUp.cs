@@ -178,9 +178,9 @@ namespace MySql.Data.MySqlClient.Tests
             else
                 port = int.Parse(portString);
             if (string.IsNullOrEmpty(pipeName))
-                pipeName = "MYSQL55";
+                pipeName = "MYSQL";
             if (string.IsNullOrEmpty(memoryName))
-                memoryName = "MYSQL55";
+                memoryName = "MYSQL";
         }
 
         internal protected virtual void Initialize()

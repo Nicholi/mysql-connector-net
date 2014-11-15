@@ -717,8 +717,13 @@ namespace MySql.Data.MySqlClient.Tests
     public void TimestampCorrectTimezone()
     {
       DateTime dt = DateTime.Now;
-      MySqlCommand cmd = new MySqlCommand("select timediff( curtime(), utc_time() )", st.rootConn);
-      string s = cmd.ExecuteScalar().ToString();
+      MySqlCommand cmd = new MySqlCommand("select timediff( NOW(), UTC_TIMESTAMP() )", st.rootConn);
+      var result = cmd.ExecuteScalar();
+      string s;
+      if (result == null)
+          s = "0:00";
+      else
+          s = result.ToString();
       int curroffset = int.Parse(s.Substring(0, s.IndexOf(':')));
       string prevTimeZone = "";
       // Ensure timezone is UTC
