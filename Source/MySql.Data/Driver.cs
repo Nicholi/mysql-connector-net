@@ -380,9 +380,16 @@ namespace MySql.Data.MySqlClient
 
     private int GetTimeZoneOffset( MySqlConnection con )
     {
-      MySqlCommand cmd = new MySqlCommand("select timediff( curtime(), utc_time() )", con);
-      string s = cmd.ExecuteScalar() as string;
-      if (s == null) s = "0:00";
+      // NECESSARY FIX, otherwise current time could be 19:00, while utc time is 03:00 in the next day (negative timezone)
+      // unfortunately this means because it is only measure the times and NOT the dates it will result in a timezone of 16:00 (but it should be -08:00)
+      MySqlCommand cmd = new MySqlCommand("select timediff( NOW(), UTC_TIMESTAMP() )", con);
+      // result is most likely a TimeSpan, NOT a string
+      var result = cmd.ExecuteScalar();
+      string s;
+      if (result == null) 
+        s = "0:00";
+      else
+        s = result.ToString();
 
       return int.Parse(s.Substring(0, s.IndexOf(':') ));
     }
