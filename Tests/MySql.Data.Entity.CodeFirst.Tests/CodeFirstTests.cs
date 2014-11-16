@@ -224,6 +224,7 @@ namespace MySql.Data.Entity.CodeFirst.Tests
       ReInitDb();
       using (VehicleDbContext context = new VehicleDbContext())
       {
+        var savedConnStr = context.Database.Connection.ConnectionString;
         context.Database.Delete();
         context.Database.Initialize(true);
         
@@ -234,7 +235,7 @@ namespace MySql.Data.Entity.CodeFirst.Tests
         var list = context.Vehicles.ToList();
 
         int records = -1;
-        using (MySqlConnection conn = new MySqlConnection(context.Database.Connection.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(savedConnStr))
         {
           conn.Open();
           MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM Vehicles", conn);
@@ -258,6 +259,7 @@ namespace MySql.Data.Entity.CodeFirst.Tests
       ReInitDb();
       using (VehicleDbContext2 context = new VehicleDbContext2())
       {
+        var savedConnStr = context.Database.Connection.ConnectionString;
         context.Database.Delete();
         context.Database.Initialize(true);
 
@@ -268,7 +270,7 @@ namespace MySql.Data.Entity.CodeFirst.Tests
         var list = context.Vehicles.ToList();
 
         int records = -1;
-        using (MySqlConnection conn = new MySqlConnection(context.Database.Connection.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(savedConnStr))
         {
           conn.Open();
           MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM Vehicle2", conn);
@@ -319,12 +321,13 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
       ReInitDb();
       using (VehicleDbContext3 context = new VehicleDbContext3())
       {
+        var savedConnStr = context.Database.Connection.ConnectionString;
         if (context.Database.Exists()) context.Database.Delete();
         context.Database.CreateIfNotExists();
         context.Accessories.Add(new Accessory { Name = "Accesory One", Description = "Accesories descriptions", LongDescription = "Some long description" });
         context.SaveChanges();
 
-        using (MySqlConnection conn = new MySqlConnection(context.Database.Connection.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(savedConnStr))
         {
           conn.Open();
           MySqlCommand query = new MySqlCommand("Select Column_name, Is_Nullable, Data_Type from information_schema.Columns where table_schema ='" + conn.Database + "' and table_name = 'Accessories' and column_name ='Description'", conn);
@@ -400,6 +403,7 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
       ReInitDb();
       using (VehicleDbContext context = new VehicleDbContext())
       {
+        var savedConnStr = context.Database.Connection.ConnectionString;
         context.Database.ExecuteSqlCommand("SET GLOBAL sql_mode='STRICT_ALL_TABLES'");
         if (context.Database.Exists()) context.Database.Delete();
         context.Database.CreateIfNotExists();
@@ -430,7 +434,7 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
 
         context.SaveChanges();
 
-        using (MySqlConnection conn = new MySqlConnection(context.Database.Connection.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(savedConnStr))
         {
           conn.Open();
 
@@ -1074,11 +1078,12 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
 #endif
       ReInitDb();
       AutoIncrementBugContext dbContext = new AutoIncrementBugContext();
+      var savedConnStr = dbContext.Database.Connection.ConnectionString;
 
       dbContext.Database.Initialize(true);
       dbContext.AutoIncrementBug.Add(new AutoIncrementBug() { Description = "Test" });
       dbContext.SaveChanges();
-      using (var reader = MySqlHelper.ExecuteReader(dbContext.Database.Connection.ConnectionString, "SHOW COLUMNS FROM AUTOINCREMENTBUGS WHERE EXTRA LIKE '%AUTO_INCREMENT%'"))
+      using (var reader = MySqlHelper.ExecuteReader(savedConnStr, "SHOW COLUMNS FROM AUTOINCREMENTBUGS WHERE EXTRA LIKE '%AUTO_INCREMENT%'"))
       {
         Assert.Equal(true, reader.HasRows);
       }
@@ -1131,7 +1136,7 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
       foreach (var i in l)
       {
       }
-      var result = MySqlHelper.ExecuteScalar("server=localhost;User Id=root;database=test;logging=true; port=3305;", "SELECT COUNT(_MigrationId) FROM __MySqlMigrations;");
+      var result = MySqlHelper.ExecuteScalar(st.DefaultConnectionString, "SELECT COUNT(_MigrationId) FROM __MySqlMigrations;");
       Assert.Equal(1, int.Parse(result.ToString()));
     }
 
@@ -1228,12 +1233,12 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
             });
 
             dbcontext.SaveChanges();
-            var result = MySqlHelper.ExecuteScalar("server=localhost;User Id=root;database=test;logging=true; port=3305;", "select COUNT(*) from moviecbcs;");
+            var result = MySqlHelper.ExecuteScalar(st.DefaultConnectionString, "select COUNT(*) from moviecbcs;");
             Assert.Equal(0, int.Parse(result.ToString()));
 
             transaction.Commit();
 
-            result = MySqlHelper.ExecuteScalar("server=localhost;User Id=root;database=test;logging=true; port=3305;", "select COUNT(*) from moviecbcs;");
+            result = MySqlHelper.ExecuteScalar(st.DefaultConnectionString, "select COUNT(*) from moviecbcs;");
             Assert.Equal(1, int.Parse(result.ToString()));
           }
           catch (Exception)
@@ -1252,7 +1257,7 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
     [Fact]
     public void UseTransactionSupportTest()
     {
-      using (var connection = new MySqlConnection("server=localhost;User Id=root;database=test;logging=true; port=3305;"))
+      using (var connection = new MySqlConnection(st.DefaultConnectionString))
       {
         connection.Open();
         using (var transaction = connection.BeginTransaction())
@@ -1273,12 +1278,12 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
 
               dbcontext.SaveChanges();
             }
-            var result = MySqlHelper.ExecuteScalar("server=localhost;User Id=root;database=test;logging=true; port=3305;", "select COUNT(*) from moviecbcs;");
+            var result = MySqlHelper.ExecuteScalar(st.DefaultConnectionString, "select COUNT(*) from moviecbcs;");
             Assert.Equal(0, int.Parse(result.ToString()));
 
             transaction.Commit();
 
-            result = MySqlHelper.ExecuteScalar("server=localhost;User Id=root;database=test;logging=true; port=3305;", "select COUNT(*) from moviecbcs;");
+            result = MySqlHelper.ExecuteScalar(st.DefaultConnectionString, "select COUNT(*) from moviecbcs;");
             Assert.Equal(1, int.Parse(result.ToString()));
           }
           catch (Exception)
@@ -1410,7 +1415,7 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
     //[Fact] //<---DON'T FORGET ME TO RUN! =D
     public void ExecutionStrategyTest()
     {
-      var connection = new MySqlConnection("server=localhost;User Id=root;logging=true; port=3305;");
+      var connection = new MySqlConnection(st.DefaultConnectionString);
       using (var dbcontext = new MovieCodedBasedConfigDBContext())
       {
         dbcontext.Database.Initialize(true);
@@ -1427,7 +1432,7 @@ where table_schema = '{0}' and table_name = 'movies' and column_name = 'Price'",
         connection.Close();
         connection.Dispose();
       }
-      var result = MySqlHelper.ExecuteScalar("server=localhost;User Id=root;database=test;logging=true; port=3305;", "select COUNT(*) from moviecbcs;");
+      var result = MySqlHelper.ExecuteScalar(st.DefaultConnectionString, "select COUNT(*) from moviecbcs;");
       Assert.Equal(1, int.Parse(result.ToString()));
     }
 #endif

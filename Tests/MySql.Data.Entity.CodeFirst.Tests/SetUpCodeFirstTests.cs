@@ -47,6 +47,8 @@ namespace MySql.Data.Entity.CodeFirst.Tests
     // A trace listener to use during testing.
     private AssertFailTraceListener asertFailListener = new AssertFailTraceListener();
 
+    public String DefaultConnectionString { get; set; }
+
     internal protected override void Initialize()
     {
       database0 = database1 = "test";
@@ -55,6 +57,7 @@ namespace MySql.Data.Entity.CodeFirst.Tests
     
     public SetUpCodeFirstTests():base()
     {      
+      this.DefaultConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnString"].ConnectionString;
 
       // Override sql_mode so it converts automatically from varchar(65535) to text
       MySqlCommand cmd = new MySqlCommand("SET GLOBAL SQL_MODE=``", rootConn);
