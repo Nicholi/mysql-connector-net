@@ -801,6 +801,15 @@ namespace MySql.Web.Tests
       Membership.DeleteUser("code");
     }
 
+    private const long NEG_TICKS_PER_SECOND = TimeSpan.TicksPerSecond * -1L;
+
+    private static bool WithinOneSecond(DateTime dateTime1, DateTime dateTime2)
+    {
+      var diff = dateTime1.CompareTo(dateTime2);
+      // first datetime will always be less than or equal to second datetime
+      return diff >= NEG_TICKS_PER_SECOND && diff <= 0;
+    }
+
     private static DateTime Truncate(DateTime dateTime, long truncateTo)
     {
         return new DateTime((dateTime.Ticks / truncateTo) * truncateTo);
@@ -853,16 +862,16 @@ namespace MySql.Web.Tests
       config.Add("dateTimeUseUtc", "True");
       testProv.Initialize(null, config);
 
-      var userCreation = DateTime.UtcNow;
       // create the user
       MembershipCreateStatus status;
+      var userCreation = DateTime.UtcNow;
       var user = testProv.CreateUser("fab", "barbar!", "fab@bar.com", null, null, true, null, out status);
       Assert.Equal(MembershipCreateStatus.Success, status);
 
       Assert.Equal(userCreation.Kind, user.CreationDate.Kind);
-      Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.CreationDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
+      Assert.True(WithinOneSecond(userCreation, user.CreationDate));
       Assert.Equal(userCreation.Kind, user.LastLoginDate.Kind);
-      Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
+      Assert.True(WithinOneSecond(userCreation, user.LastLoginDate));
 
       Thread.Sleep(30000);
 
@@ -872,7 +881,7 @@ namespace MySql.Web.Tests
       user = testProv.GetUser("fab", false);
 
       Assert.Equal(lastLogin.Kind, user.LastLoginDate.Kind);
-      Assert.Equal(Truncate(lastLogin, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate.ToUniversalTime(), TimeSpan.TicksPerSecond));
+      Assert.True(WithinOneSecond(lastLogin, user.LastLoginDate));
 
       testProv.DeleteUser("fab", true);
 
@@ -889,14 +898,16 @@ namespace MySql.Web.Tests
         config.Add("dateTimeUseUtc", "False");
         testProv.Initialize(null, config);
 
-        var userCreation = DateTime.Now;
         // create the user
         MembershipCreateStatus status;
+        var userCreation = DateTime.Now;
         var user = testProv.CreateUser("nab", "barbar!", "nab@bar.com", null, null, true, null, out status);
         Assert.Equal(MembershipCreateStatus.Success, status);
 
-        Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.CreationDate, TimeSpan.TicksPerSecond));
-        Assert.Equal(Truncate(userCreation, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate, TimeSpan.TicksPerSecond));
+        Assert.Equal(userCreation.Kind, user.CreationDate.Kind);
+        Assert.True(WithinOneSecond(userCreation, user.CreationDate));
+        Assert.Equal(userCreation.Kind, user.LastLoginDate.Kind);
+        Assert.True(WithinOneSecond(userCreation, user.LastLoginDate));
 
         Thread.Sleep(30000);
 
@@ -905,7 +916,8 @@ namespace MySql.Web.Tests
         Assert.Equal(true, validated);
         user = testProv.GetUser("nab", false);
 
-        Assert.Equal(Truncate(lastLogin, TimeSpan.TicksPerSecond), Truncate(user.LastLoginDate, TimeSpan.TicksPerSecond));
+        Assert.Equal(lastLogin.Kind, user.LastLoginDate.Kind);
+        Assert.True(WithinOneSecond(lastLogin, user.LastLoginDate));
 
         testProv.DeleteUser("nab", true);
     }

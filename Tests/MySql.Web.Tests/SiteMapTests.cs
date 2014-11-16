@@ -43,13 +43,13 @@ namespace MySql.Web.Tests
     {
       st = data;
       st.rootConn.Close();
-      st.rootConn = new MySqlConnection("server=localhost;userid=root;pwd=;database=" + st.conn.Database + ";port=" + st.port);
+      //st.rootConn = new MySqlConnection("server=localhost;userid=root;pwd=;database=" + st.conn.Database + ";port=" + st.port);
       st.rootConn.Open();
     }
 
     public void Dispose()
     {
-      st.ExecuteSQLAsRoot("Delete from my_aspnet_sitemap");
+      st.ExecuteSQLAsRoot("Delete from `" + st.conn.Database + "`.my_aspnet_sitemap");
     }
     
     private void PopulateSiteMapTable()

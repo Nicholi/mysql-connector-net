@@ -49,9 +49,9 @@ namespace MySql.Web.Tests
 
     public void Dispose()
     {
-      st.ExecuteSQLAsRoot("Delete from my_aspnet_profiles");
-      st.ExecuteSQLAsRoot("Delete from my_aspnet_users");      
-      st.ExecuteSQLAsRoot("Delete from my_aspnet_applications");
+      st.ExecuteSQLAsRoot("Delete from `" + st.conn.Database + "`.my_aspnet_profiles");
+      st.ExecuteSQLAsRoot("Delete from `" + st.conn.Database + "`.my_aspnet_users");
+      st.ExecuteSQLAsRoot("Delete from `" + st.conn.Database + "`.my_aspnet_applications");
     }
 
     private MySQLProfileProvider InitProfileProvider()

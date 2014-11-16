@@ -48,6 +48,9 @@ namespace MySql.Data.Tests.Stress
     }
 #if !CF
 
+    /// <summary>
+    /// NOTE: may need to increase innodb_log_file_size on server
+    /// </summary>
     [Fact]
     public void TestMultiPacket()
     {
