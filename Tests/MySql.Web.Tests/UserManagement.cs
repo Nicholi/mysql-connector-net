@@ -801,13 +801,10 @@ namespace MySql.Web.Tests
       Membership.DeleteUser("code");
     }
 
-    private const long NEG_TICKS_PER_SECOND = TimeSpan.TicksPerSecond * -1L;
-
     private static bool WithinOneSecond(DateTime dateTime1, DateTime dateTime2)
     {
-      var diff = dateTime1.CompareTo(dateTime2);
-      // first datetime will always be less than or equal to second datetime
-      return diff >= NEG_TICKS_PER_SECOND && diff <= 0;
+      var diff = Math.Abs(dateTime1.Ticks - dateTime2.Ticks);
+      return diff <= TimeSpan.TicksPerSecond;
     }
 
     private static DateTime Truncate(DateTime dateTime, long truncateTo)
