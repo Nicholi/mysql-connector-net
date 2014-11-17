@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySql.Data.Entity.Migration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySql.Replication.Tests", "Tests\MySql.Replication.Tests\MySql.Replication.Tests.csproj", "{8DE7265B-0880-4E02-93EA-14EF8DADF47D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySql.Data.Tests.Stress", "Tests\MySql.Data.Tests.Stress\MySql.Data.Tests.Stress.csproj", "{2D442A7A-B938-4168-A736-21A41CAD5DD2}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5C4B4F1C-008E-4D2D-AC42-F7BCCA2B4DA9}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -167,6 +169,20 @@ Global
 		{8DE7265B-0880-4E02-93EA-14EF8DADF47D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8DE7265B-0880-4E02-93EA-14EF8DADF47D}.Release|x64.ActiveCfg = Release|Any CPU
 		{8DE7265B-0880-4E02-93EA-14EF8DADF47D}.Release|x86.ActiveCfg = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|ARM.ActiveCfg = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D442A7A-B938-4168-A736-21A41CAD5DD2}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-// Copyright © 2004, 2013, Oracle and/or its affiliates. All rights reserved.
+// Copyright © 2004, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -270,11 +270,14 @@ namespace MySql.Web.SessionState
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
           MySqlCommand cmd = new MySqlCommand(
-             "INSERT INTO my_aspnet_sessions" +
-             " (SessionId, ApplicationId, Created, Expires, LockDate," +
-             " LockId, Timeout, Locked, SessionItems, Flags)" +
-             " Values (@SessionId, @ApplicationId, NOW(), NOW() + INTERVAL @Timeout MINUTE, NOW()," +
-             " @LockId , @Timeout, @Locked, @SessionItems, @Flags)",
+  @"INSERT INTO my_aspnet_sessions
+    (SessionId, ApplicationId, Created, Expires, LockDate,
+    LockId, Timeout, Locked, SessionItems, Flags)
+    Values (@SessionId, @ApplicationId, NOW(), NOW() + INTERVAL @Timeout MINUTE, NOW(),
+    @LockId , @Timeout, @Locked, @SessionItems, @Flags) 
+  on duplicate key update Created = values( Created ), Expires = values( Expires ),
+    LockDate = values( LockDate ), LockId = values( LockId ), Timeout = values( Timeout) ,
+    Locked = values( Locked ), SessionItems = values( SessionItems ), Flags = values( Flags )",
              conn);
 
           cmd.Parameters.AddWithValue("@SessionId", id);
@@ -477,10 +480,14 @@ namespace MySql.Web.SessionState
             //with the same SessionId and Application id, it will be removed
 
             cmd = new MySqlCommand(
-                "REPLACE INTO my_aspnet_sessions (SessionId, ApplicationId, Created, Expires," +
-                " LockDate, LockId, Timeout, Locked, SessionItems, Flags)" +
-                " Values(@SessionId, @ApplicationId, NOW(), NOW() + INTERVAL @Timeout MINUTE, NOW()," +
-                " @LockId , @Timeout, @Locked, @SessionItems, @Flags)", conn);
+  @"INSERT INTO my_aspnet_sessions
+    (SessionId, ApplicationId, Created, Expires, LockDate,
+    LockId, Timeout, Locked, SessionItems, Flags)
+    Values (@SessionId, @ApplicationId, NOW(), NOW() + INTERVAL @Timeout MINUTE, NOW(),
+    @LockId , @Timeout, @Locked, @SessionItems, @Flags) 
+  on duplicate key update Created = values( Created ), Expires = values( Expires ),
+    LockDate = values( LockDate ), LockId = values( LockId ), Timeout = values( Timeout) ,
+    Locked = values( Locked ), SessionItems = values( SessionItems ), Flags = values( Flags )", conn);
             cmd.Parameters.AddWithValue("@SessionId", id);
             cmd.Parameters.AddWithValue("@ApplicationId", ApplicationId);
             cmd.Parameters.AddWithValue("@Timeout", item.Timeout);

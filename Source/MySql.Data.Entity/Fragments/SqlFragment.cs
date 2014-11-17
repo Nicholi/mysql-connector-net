@@ -1,4 +1,4 @@
-﻿// Copyright © 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+﻿// Copyright © 2008, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -68,7 +68,6 @@ namespace MySql.Data.Entity
   /// </summary>
   internal interface SqlFragmentVisitor
   {
-    void Visit(SqlFragment f);
     void Visit(IsNullFragment f);
     void Visit(CaseFragment f);
     void Visit(ExistsFragment f);
@@ -78,6 +77,12 @@ namespace MySql.Data.Entity
     void Visit(BinaryFragment f);
     void Visit(ColumnFragment f);
     void Visit(LiteralFragment f);
+    void Visit(UnionFragment f);
+    void Visit(SortFragment f);
+    void Visit(ListFragment f);
+    void Visit(SelectStatement f);
+    void Visit(TableFragment f);
+    void Visit(JoinFragment f);
   }
 
   /// <summary>
@@ -87,15 +92,13 @@ namespace MySql.Data.Entity
   {
     private string _oldTableName;
     private string _newTableName;
+    private Dictionary<string, ColumnFragment> _dicColumns;
 
-    internal ReplaceTableNameVisitor(string oldTableName, string newTableName)
+    internal ReplaceTableNameVisitor(string oldTableName, string newTableName, Dictionary<string, ColumnFragment> dicColumns)
     {
       _oldTableName = oldTableName;
       _newTableName = newTableName;
-    }
-
-    public void Visit(SqlFragment f)
-    {
+      _dicColumns = dicColumns;
     }
 
     public void Visit(IsNullFragment f)
@@ -128,8 +131,14 @@ namespace MySql.Data.Entity
 
     public void Visit(ColumnFragment f)
     {
+      ColumnFragment cf;
       if ((f != null) && (f.TableName == _oldTableName))
         f.TableName = _newTableName;
+      if (_dicColumns != null && f.ColumnName != null && _dicColumns.TryGetValue(f.ColumnName, out cf))
+      {
+        // remove alias
+        f.ColumnName = cf.ColumnName;
+      }
     }
 
     public void Visit(LiteralFragment f)
@@ -139,6 +148,31 @@ namespace MySql.Data.Entity
       f.Literal = f.Literal.Replace(string.Format("`{0}`", _oldTableName),
         string.Format("`{0}`", _newTableName));
     }
+
+    public void Visit(UnionFragment f)
+    {
+    }
+
+    public void Visit(SortFragment f)
+    {
+    }
+
+    public void Visit(ListFragment f)
+    {
+    }
+
+    public void Visit(SelectStatement f)
+    {
+    }
+
+    public void Visit(TableFragment f)
+    {
+    }
+
+    public void Visit(JoinFragment f)
+    {
+    }
+
   }  
 
   internal class BinaryFragment : NegatableFragment
@@ -178,8 +212,8 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
-      Left.Accept(visitor);
-      Right.Accept(visitor);
+      if (Left != null) Left.Accept(visitor);
+      if (Right != null) Right.Accept(visitor);
       visitor.Visit(this);
     }
   }
@@ -187,7 +221,7 @@ namespace MySql.Data.Entity
   internal class InFragment : NegatableFragment
   {
     public List<LiteralFragment> InList;
-    public ColumnFragment Argument;
+    public SqlFragment Argument;
 
     internal InFragment()
     {
@@ -210,7 +244,9 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
-      Argument.Accept(visitor);
+      // Most Accept methods are postorder, this one is preorden due to semantics of ApplyUnionEmulatorVisitor.
+      visitor.Visit(this);
+      if (Argument != null) Argument.Accept(visitor);
       for (int i = 0; i < InList.Count; i++)
         InList[i].Accept(visitor);
       visitor.Visit(this);
@@ -250,6 +286,7 @@ namespace MySql.Data.Entity
         Then[i].Accept(visitor);
       for (int i = 0; i < When.Count; i++)
         When[i].Accept(visitor);
+      if (Else != null) Else.Accept(visitor);
       visitor.Visit(this);
     }
   }
@@ -331,6 +368,8 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
+      if (Literal != null) Literal.Accept(visitor);
+      //if (PropertyFragment != null) PropertyFragment.Accept(visitor);
       visitor.Visit(this);
     }
   }
@@ -420,6 +459,8 @@ namespace MySql.Data.Entity
     internal override void Accept(SqlFragmentVisitor visitor)
     {
       Argument.Accept(visitor);
+      Pattern.Accept(visitor);
+      if (Escape != null) Escape.Accept(visitor);
       visitor.Visit(this);
     }
   }
@@ -448,6 +489,7 @@ namespace MySql.Data.Entity
     {
       for (int i = 0; i < Fragments.Count; i++)
         Fragments[i].Accept(visitor);
+      visitor.Visit(this);
     }
   }
 
@@ -467,7 +509,7 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
-      throw new System.NotImplementedException();
+      // nothing
     }
   }
 
@@ -563,7 +605,7 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
-      throw new System.NotImplementedException();
+      // nothing
     }
   }
 
@@ -593,6 +635,7 @@ namespace MySql.Data.Entity
     internal override void Accept(SqlFragmentVisitor visitor)
     {
       Column.Accept(visitor);
+      visitor.Visit(this);
     }
   }
 
@@ -602,9 +645,13 @@ namespace MySql.Data.Entity
 
     public override void WriteInnerSql(StringBuilder sql)
     {
+      sql.Append('(');
       Left.WriteSql(sql);
+      sql.Append(')');
       sql.Append(Distinct ? " UNION DISTINCT " : " UNION ALL ");
+      sql.Append('(');
       Right.WriteSql(sql);
+      sql.Append(')');
     }
 
     public bool HasDifferentNameForColumn(ColumnFragment column)
@@ -618,7 +665,7 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
-      throw new System.NotImplementedException();
+      visitor.Visit(this);
     }
   }
 

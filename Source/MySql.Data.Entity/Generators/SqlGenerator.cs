@@ -1,4 +1,4 @@
-﻿// Copyright © 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+﻿// Copyright © 2008, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -103,7 +103,29 @@ namespace MySql.Data.Entity
         column.TableName = input.Name;
 
       // now we need to check if our column name was possibly renamed
-      if (input is TableFragment) return column;
+      if (input is TableFragment )
+      {
+        if (!string.IsNullOrEmpty(input.Name))
+        {
+          SelectStatement sf = scope.GetFragment(input.Name) as SelectStatement;
+          if (sf != null)
+          {
+            // Special case: undo alias in case of query fusing
+            for (int i = 0; i < sf.Columns.Count; i++)
+            {
+              ColumnFragment cf = sf.Columns[i];
+              if (column.ColumnName == cf.ColumnAlias)
+              {
+                column.ColumnName = cf.ColumnName;
+                column.ColumnAlias = cf.ColumnAlias;
+                column.TableName = input.Name;
+                return column;
+              }
+            }
+          }
+        }
+        return column;
+      }
 
       SelectStatement select = input as SelectStatement;
       UnionFragment union = input as UnionFragment;
@@ -125,7 +147,25 @@ namespace MySql.Data.Entity
       MetadataProperty property;
       bool propExists = target.MetadataProperties.TryGetValue("DefiningQuery", true, out property);
       if (propExists && property.Value != null)
+      {
+        
+        MetadataProperty prop2;
+
+        if( target.MetadataProperties.TryGetValue( "http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator:Type", true, out prop2 ) && ( prop2.Value as string == "Views" ))
+
+        {
+          
+          // avoid storing view query as DefiningQuery because that hurts query fusing.
+          fragment.Schema = target.MetadataProperties.GetValue("http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator:Schema", true).Value as string;
+          fragment.Table = target.Name;
+       
+        } else {
         fragment.DefiningQuery = new LiteralFragment(property.Value as string);
+
+        }
+
+      }
+
       else
       {
         fragment.Schema = target.EntityContainer.Name;
@@ -214,9 +254,9 @@ namespace MySql.Data.Entity
 #if EF6
     public override SqlFragment Visit(DbInExpression expression)
     {
-      ColumnFragment cf = Visit(expression.Item as DbPropertyExpression) as ColumnFragment;
+      SqlFragment sf = expression.Item.Accept(this);
       InFragment inf = new InFragment();
-      inf.Argument = cf;
+      inf.Argument = sf;
       for( int i = 0; i < expression.List.Count; i++ )
       {
         LiteralFragment lf = Visit( expression.List[ i ] as DbConstantExpression ) as LiteralFragment;
@@ -478,9 +518,14 @@ namespace MySql.Data.Entity
     {
       string oldTableName = (inner.From as TableFragment).Name;
       string newTableName = inner.Name;
+      Dictionary<string, ColumnFragment> dicColumns = new Dictionary<string, ColumnFragment>();
+
+      foreach (ColumnFragment cf in inner.Columns)
+      {
+        if (cf.ColumnAlias != null)
+          dicColumns.Add(cf.ColumnAlias, cf);
+      }
       outer.From = inner.From;
-      //if (outer.Name != null)
-      //  outer.Name = newTableName;
       (outer.From as TableFragment).Name = newTableName;
       // Dispatch Where
       if (outer.Where == null)
@@ -491,13 +536,13 @@ namespace MySql.Data.Entity
       {
         outer.Where = new BinaryFragment() { Left = outer.Where, Right = inner.Where, Operator = "AND" };
       }
-      VisitAndReplaceTableName(outer.Where, oldTableName, newTableName);
+      VisitAndReplaceTableName(outer.Where, oldTableName, newTableName, dicColumns);
       // For the next constructions, either is defined on outer or at inner, not both
       // Dispatch Limit
       if (outer.Limit == null)
       {
         outer.Limit = inner.Limit;
-        VisitAndReplaceTableName(outer.Limit, oldTableName, newTableName);
+        VisitAndReplaceTableName(outer.Limit, oldTableName, newTableName, dicColumns);
       }
       // Dispatch GroupBy
       if (outer.GroupBy == null && inner.GroupBy != null)
@@ -505,15 +550,18 @@ namespace MySql.Data.Entity
         foreach (SqlFragment sf in inner.GroupBy)
           outer.AddGroupBy(sf);
         foreach (SqlFragment sf in outer.GroupBy)
-          VisitAndReplaceTableName(sf, oldTableName, newTableName);
+          VisitAndReplaceTableName(sf, oldTableName, newTableName, dicColumns);
       }
       // Dispatch OrderBy
-      if (outer.OrderBy == null && inner.OrderBy != null)
+      if (outer.OrderBy != null || inner.OrderBy != null)
+      {
+        if (inner.OrderBy != null)
       {
         foreach (SortFragment sf in inner.OrderBy)
           outer.AddOrderBy(sf);
+        }
         foreach (SortFragment sf in outer.OrderBy)
-          VisitAndReplaceTableName(sf, oldTableName, newTableName);
+          VisitAndReplaceTableName(sf, oldTableName, newTableName, dicColumns);
       }
       // Dispatch Skip
       if (outer.Skip == null)
@@ -547,10 +595,11 @@ namespace MySql.Data.Entity
       }
     }
 
-    protected internal void VisitAndReplaceTableName(SqlFragment sf, string oldTable, string newTable)
+    protected internal void VisitAndReplaceTableName(SqlFragment sf, string oldTable, string newTable, 
+      Dictionary<string, ColumnFragment> dicColumns)
     {
       if (sf == null) return;
-      ReplaceTableNameVisitor visitor = new ReplaceTableNameVisitor(oldTable, newTable);
+      ReplaceTableNameVisitor visitor = new ReplaceTableNameVisitor(oldTable, newTable, dicColumns);
       sf.Accept(visitor);
     }
 
@@ -568,8 +617,11 @@ namespace MySql.Data.Entity
       if (inputFragment is TableFragment && type != null)
         (inputFragment as TableFragment).Type = type;
 
-      if ((inputFragment is SelectStatement) && ((inputFragment as SelectStatement).From is TableFragment))
-        ((inputFragment as SelectStatement).From as TableFragment).Type = type;
+      SelectStatement select = inputFragment as SelectStatement;
+      if ((select != null) && (select.From is TableFragment))
+      {
+        (select.From as TableFragment).Type = type;
+      }
 
       if (name != null)
         scope.Add(name, inputFragment);
@@ -609,6 +661,8 @@ namespace MySql.Data.Entity
         LikeFragment like = new LikeFragment();
         if (fl.Function.FullName == "Edm.IndexOf")
         {
+          DbParameterReferenceExpression par;
+          DbPropertyExpression prop;
           int value = Convert.ToInt32(((DbConstantExpression)right).Value);
           like.Argument = fl.Arguments[1].Accept(this);
           if ((value == 1) && (op == "="))
@@ -636,16 +690,43 @@ namespace MySql.Data.Entity
                 like.Argument = fr2.Arguments[0].Accept(this);
                 return like;
               }
+              else if( /* For EF6 */
+                (( par = fr1.Arguments[ 0 ] as DbParameterReferenceExpression  ) != null ) &&
+                (( prop = fr2.Arguments[0] as DbPropertyExpression) != null ))
+              {
+                // Pattern LIKE "%..." in EF6
+                like.Pattern = new LiteralFragment(string.Format("'%{0}'", par.ParameterName));
+                like.Argument = prop.Accept(this);
+                return like;
+              }
+            }
+            else if( ( fl.Arguments.Count == 2) &&
+              (( par = fl.Arguments[ 0 ] as DbParameterReferenceExpression ) != null ) && 
+              (( prop = fl.Arguments[ 1 ] as DbPropertyExpression ) != null ) )
+            {
+              // Case LIKE "pattern%" in EF6
+              like.Pattern = new LiteralFragment( string.Format( "'{0}%'", par.ParameterName ));
+              like.Argument = prop.Accept( this );
+              return like;
             }
           }
           else if (value == 0)
           {
-            if ((op == ">") && (fl.Arguments[0] is DbConstantExpression))
+            if ( op == ">") 
+            {
+              if (fl.Arguments[0] is DbConstantExpression)
             {
               // Case LIKE '%pattern%'
               DbConstantExpression c = (DbConstantExpression)fl.Arguments[0];
               like.Pattern = new LiteralFragment(string.Format("'%{0}%'", c.Value.ToString().Replace("'", "''") ));
               return like;
+            }
+              else if ( ( par = fl.Arguments[ 0 ] as DbParameterReferenceExpression ) != null ) 
+              {
+                // Case LIKE "%pattern%" in EF6
+                like.Pattern = new LiteralFragment(string.Format("'%{0}%'", par.ParameterName));
+                return like;
+              }
             }
           }
         }

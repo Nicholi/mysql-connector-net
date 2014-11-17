@@ -1,4 +1,4 @@
-﻿// Copyright © 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+﻿// Copyright © 2008, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -54,8 +54,8 @@ namespace MySql.Data.Entity
     public SqlFragment Where;
     public SqlFragment Limit;
     public SqlFragment Skip;
-    public List<SqlFragment> GroupBy { get; private set; }
-    public List<SortFragment> OrderBy { get; private set; }
+    public List<SqlFragment> GroupBy { get; internal set; }
+    public List<SortFragment> OrderBy { get; internal set; }
     public bool IsDistinct;
 
     public void AddGroupBy(SqlFragment f)
@@ -168,7 +168,7 @@ namespace MySql.Data.Entity
           columnHash.Add(column.ColumnName.ToUpper(), column);
         Columns.Add(column);
       }
-      if (From is TableFragment && Exists)
+      if (Exists)
       {
         scope.Remove((From as TableFragment).Table, From);
       }
@@ -327,7 +327,34 @@ namespace MySql.Data.Entity
 
     internal override void Accept(SqlFragmentVisitor visitor)
     {
-      throw new System.NotImplementedException();
+      if (From != null) From.Accept(visitor);
+      if (Columns != null)
+      {
+        foreach (ColumnFragment cf in Columns)
+        {
+          cf.Accept(visitor);
+        }
+      }
+      if (Where != null) Where.Accept(visitor);
+      if (Limit != null) Limit.Accept(visitor);
+      if (Skip != null) Skip.Accept(visitor);
+      if (GroupBy != null)
+      {
+        foreach (SqlFragment grp in GroupBy)
+        {
+          grp.Accept(visitor);
+        }
+      }
+      if (OrderBy != null)
+      {
+        foreach (SortFragment sort in OrderBy)
+        {
+          sort.Accept(visitor);
+        }
+      }
+
+      visitor.Visit(this);
+
     }
   }
 }

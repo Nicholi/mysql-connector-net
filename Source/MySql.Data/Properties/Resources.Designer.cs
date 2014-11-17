@@ -439,6 +439,24 @@ namespace MySql.Data.MySqlClient.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsecond must be a value between 0 and 999999..
+        /// </summary>
+        public static string InvalidMicrosecondValue {
+            get {
+                return ResourceManager.GetString("InvalidMicrosecondValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Millisecond must be a value between 0 and 999. For more precision use Microsecond..
+        /// </summary>
+        public static string InvalidMillisecondValue {
+            get {
+                return ResourceManager.GetString("InvalidMillisecondValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Procedure or function &apos;{0}&apos; cannot be found in database &apos;{1}&apos;..
         /// </summary>
         public static string InvalidProcName {

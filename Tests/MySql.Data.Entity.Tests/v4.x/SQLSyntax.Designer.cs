@@ -395,6 +395,43 @@ namespace MySql.Data.Entity.Tests.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT
+        ///`UnionAll1`.`Id` AS `C1`, 
+        ///`UnionAll1`.`Name` AS `C2`, 
+        ///`UnionAll1`.`MinAge` AS `C3`, 
+        ///`UnionAll1`.`SupplierId` AS `C4`
+        ///FROM (SELECT
+        ///`Extent1`.`Id`, 
+        ///`Extent1`.`Name`, 
+        ///`Extent1`.`MinAge`, 
+        ///`Extent1`.`SupplierId`
+        ///FROM `Toys` AS `Extent1` UNION ALL (SELECT
+        ///`Id`, 
+        ///`Name`, 
+        ///`MinAge`, 
+        ///`SupplierId`
+        ///FROM `Toys` LIMIT 0)) AS `UnionAll1`
+        /// </summary>
+        internal static string UnionWithLimit
+        {
+          get
+          {
+            return ResourceManager.GetString("UnionWithLimit", resourceCulture);
+          }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT ...
+        /// </summary>
+        internal static string UnionWithLimit2
+        {
+          get
+          {
+            return ResourceManager.GetString("UnionWithLimit2", resourceCulture);
+          }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT
         ///`Extent1`.`Id`, 
         ///`Extent1`.`Name`, 
         ///`Join1`.`Id` AS `C1`, 
@@ -877,6 +914,19 @@ namespace MySql.Data.Entity.Tests.Properties {
         internal static string SumWithPredicate {
             get {
                 return ResourceManager.GetString("SumWithPredicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT
+        ///  `Id`, 
+        ///  `Name`, 
+        ///  `Developer`
+        ///  FROM `vivideogametitle` LIMIT 10.
+        /// </summary>
+        internal static string TakeWithView {
+            get {
+                return ResourceManager.GetString("TakeWithView", resourceCulture);
             }
         }
         

@@ -120,7 +120,7 @@ namespace MySql.Data.MySqlClient.Tests
     /// This test is not a perfect test of this bug as the kill connection is not quite the
     /// same as unplugging the network but it's the best I've figured out so far
     /// </summary>
-    [Fact(Skip = "Likely to just block forever (??) UNLESS ran with debugging")]
+    [Fact(Skip="Temporary Skip")]
     public void CommitAfterConnectionDead()
     {
       st.execSQL("DROP TABLE IF EXISTS Test");
