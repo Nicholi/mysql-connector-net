@@ -89,6 +89,17 @@ namespace MySql.Data.MySqlClient
       ConnectionString = connectionString;
     }
 
+    #region Destructor
+    ~MySqlConnection()
+    {
+#if !RT
+      Dispose(false);
+#else
+      Dispose();
+#endif
+    }
+    #endregion
+
     #region Interal Methods & Properties
 
 #if !CF
@@ -806,11 +817,21 @@ namespace MySql.Data.MySqlClient
 #endif
     }
 
+#if !RT
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+#else
     public new void Dispose()
     {
       if (State == ConnectionState.Open)
         Close();
+
+      GC.SuppressFinalize(this);
     }
+#endif
 
 #if NET_40_OR_GREATER
     #region Async

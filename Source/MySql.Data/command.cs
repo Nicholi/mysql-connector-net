@@ -66,8 +66,6 @@ namespace MySql.Data.MySqlClient
     private int cacheAge;
     private bool internallyCreated;
 
-    private static List<string> SingleWordKeywords = new List<string>(new string[] { "COMMIT", "ROLLBACK", "USE", "BEGIN", "END" });
-
     /// <include file='docs/mysqlcommand.xml' path='docs/ctor1/*'/>
     public MySqlCommand()
     {
@@ -102,6 +100,20 @@ namespace MySql.Data.MySqlClient
     {
       curTransaction = transaction;
     }
+
+    #region Destructor
+#if !RT
+    ~MySqlCommand()
+    {
+      Dispose(false);
+    }
+#else
+    ~MySqlCommand()
+    {
+      this.Dispose();
+    }
+#endif
+    #endregion
 
     #region Properties
 
@@ -461,9 +473,10 @@ namespace MySql.Data.MySqlClient
         else if (CommandType == CommandType.Text)
         {
           // validates single word statetment (maybe is a stored procedure call)
-          if (sql.IndexOf(" ") == -1 && !SingleWordKeywords.Contains(sql.ToUpper()))
+          if (sql.IndexOf(" ") == -1)
           {
-            sql = "call " + sql;
+            if (AddCallStatement(sql))
+              sql = "call " + sql;
           }
         }
 
@@ -844,6 +857,21 @@ namespace MySql.Data.MySqlClient
       return size;
     }
 
+    /// <summary>
+    /// Verifies if a query is valid even if it has not spaces or is a stored procedure call
+    /// </summary>
+    /// <param name="query">Query to validate</param>
+    /// <returns>If it is necessary to add call statement</returns>
+    private bool AddCallStatement(string query)
+    {
+      /*PATTERN MATCHES
+       * SELECT`user`FROM`mysql`.`user`;, select(left('test',1));, do(1);, commit, rollback, use, begin, end, use`sakila`;, select`test`;, select'1'=1;, SET@test='test';
+       */
+      string pattern = @"^|COMMIT|ROLLBACK|BEGIN|END|DO\S+|SELECT\S+[FROM|\S+]|USE?\S+|SET\S+";
+      System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+      return !(regex.Matches(query).Count > 0);
+    }
+
     #endregion
 
     #region ICloneable
@@ -958,11 +986,26 @@ namespace MySql.Data.MySqlClient
       throw ex;
     }
 
-    public new void Dispose()
-    {
-      if (statement != null && statement.IsPrepared)
-        statement.CloseStatement();
+#if !RT
+     public void Dispose()
+     {
+      Dispose(true);
+      GC.SuppressFinalize(this);
     }
+
+    protected override void Dispose(bool disposing)
+    {
+       if (statement != null && statement.IsPrepared)
+         statement.CloseStatement();
+
+      base.Dispose(disposing);
+     }
+#else
+    public void Dispose()
+    {
+      GC.SuppressFinalize(this);
+    }
+#endif
   }
 }
 

@@ -1,4 +1,4 @@
-﻿// Copyright © 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+﻿// Copyright © 2008, 2014, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -244,12 +244,16 @@ NoChanges:
         {
           SelectStatement newColSelect = new SelectStatement(this);
           newColSelect.From = applySel.From;
-      newColSelect.Where = applySel.Where;
+          newColSelect.Where = applySel.Where;
           if (isInputSelect)
           {
-            VisitAndReplaceTableName(newColSelect.Where, (input as SelectStatement).From.Name, input.Name);
+            VisitAndReplaceTableName(newColSelect.Where, (input as SelectStatement).From.Name, input.Name, null);
           }
           newColSelect.Limit = applySel.Limit;
+          newColSelect.OrderBy = applySel.OrderBy;
+          newColSelect.Skip = applySel.Skip;
+          newColSelect.GroupBy = applySel.GroupBy;
+          newColSelect.IsDistinct = applySel.IsDistinct;
           newColSelect.Columns.Add( f );
 
           newColSelect.Wrap(scope);
