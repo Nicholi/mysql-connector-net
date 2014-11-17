@@ -448,7 +448,7 @@ namespace MySql.Data.Types
             else
                 kind = DateTimeKind.Local;
         }
-        return new DateTime(year, month, day, hour, minute, second, millisecond, kind);
+        return new DateTime(year, month, day, hour, minute, second, kind).AddTicks(microsecond * 10);
     }
 
     private static string FormatDateCustom(string format, int monthVal, int dayVal, int yearVal)
