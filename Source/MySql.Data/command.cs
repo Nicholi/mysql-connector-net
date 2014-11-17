@@ -987,7 +987,7 @@ namespace MySql.Data.MySqlClient
     }
 
 #if !RT
-     public void Dispose()
+     public new void Dispose()
      {
       Dispose(true);
       GC.SuppressFinalize(this);
@@ -1001,7 +1001,7 @@ namespace MySql.Data.MySqlClient
       base.Dispose(disposing);
      }
 #else
-    public void Dispose()
+    public new void Dispose()
     {
       GC.SuppressFinalize(this);
     }
