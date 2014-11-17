@@ -219,7 +219,7 @@ namespace MySql.Data.Entity.CodeFirst.Tests
         context.Database.ExecuteSqlCommand(@"drop procedure if exists `GetCount`");
         context.Database.ExecuteSqlCommand(@"create procedure `GetCount`() begin select 5; end;");
 #if EF6
-        long count = context.Database.SqlQuery<long>("GetCount").First();
+        long count = context.Database.SqlQuery<long>("CALL GetCount").First();
 #else
         int count = context.Database.SqlQuery<int>("GetCount").First();
 #endif

@@ -556,7 +556,8 @@ namespace MySql.Data.MySqlClient.Tests
       MySqlCommand cmd = new MySqlCommand("", st.conn);
       cmd.CommandText = ";";
       Exception ex = Assert.Throws<MySqlException>(() => cmd.ExecuteNonQuery());
-      Assert.Equal("You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1", ex.Message);
+      //Assert.Equal("You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1", ex.Message);
+      Assert.Equal("Query was empty", ex.Message);
     }
 
 #if !CF && !RT
@@ -681,7 +682,8 @@ alter table longids AUTO_INCREMENT = 2147483640;";
     [Fact]
     public void CommandWithoutSpacesTest()
     {
-      string[] queries = new string[] { "select`user`from`mysql`.`user`;",
+      string[] queries = new string[] { String.Format(
+                                       "select`user`from`mysql`.`user`;",
                                        "select(left('test',1));",
                                        "SET@test='test';",
                                        "do(1);",
@@ -690,9 +692,9 @@ alter table longids AUTO_INCREMENT = 2147483640;";
                                        //"use", //it fails because invalid syntax error
                                        "begin",
                                        //"end", //it fails because invalid syntax error
-                                       "use`sakila`;",
+                                       "use`{0}`;",
                                        "select'test';",
-                                       "select'1'=1;" };
+                                       "select'1'=1;", st.database0) };
 
       string logQuery = "SELECT argument FROM mysql.general_log WHERE argument = '{0}'";
 

@@ -990,7 +990,7 @@ namespace MySql.Data.MySqlClient.Tests
       st.execSQL("CREATE PROCEDURE GetCount() BEGIN SELECT 5; END");
 
       MySqlCommand cmd = new MySqlCommand("GetCount", st.conn);
-      cmd.CommandType = CommandType.Text;
+      cmd.CommandType = CommandType.StoredProcedure;
 
       Assert.Equal(5, Convert.ToInt32(cmd.ExecuteScalar()));
     }

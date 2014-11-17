@@ -340,7 +340,7 @@ FROM `CrewMembers` AS `Extent3` INNER JOIN `Ranks` AS `Extent4` ON `Extent3`.`Ra
     <value>SELECT
 `Project1`.`ID` AS `C1`
 FROM `Movies` AS `Project1`
- WHERE (((`Project1`.`ID`) = @p__linq__0) AND (NOT ((`Project1`.`ID` IS  NULL) OR (@p__linq__0 IS  NULL)))) OR ((`Project1`.`ID` IS  NULL) AND (@p__linq__0 IS  NULL))
+ WHERE (`Project1`.`ID`) = @p__linq__0
  ORDER BY 
 `Project1`.`ID` ASC</value>
   </data>
@@ -414,7 +414,7 @@ FROM `Movies` AS `Project1`
   `Extent1`.`Data`, 
   `Extent1`.`Director_ID`
   FROM `Movies` AS `Extent1`
-   WHERE (@p__linq__0 IN ( 1,2,3 )) AND (@p__linq__0 IS NOT NULL)</value>
+   WHERE @p__linq__0 IN ( 1,2,3 )</value>
   </data>
 <data name="TestContainsListWitConstantEF5" xml:space="preserve">
     <value>SELECT
