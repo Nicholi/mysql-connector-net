@@ -39,7 +39,7 @@ namespace MySql.Data.Types
     private bool isNull;
     private MySqlDbType type;
     private int year, month, day, hour, minute, second;
-    private int millisecond, microsecond;
+    private int microsecond;
     public int TimezoneOffset;
 
     /// <summary>
@@ -80,7 +80,6 @@ namespace MySql.Data.Types
       minute = mdt.Minute;
       second = mdt.Second;
       microsecond = 0;
-      millisecond = 0;
       type = MySqlDbType.DateTime;
       isNull = false;
       TimezoneOffset = 0;
@@ -106,7 +105,6 @@ namespace MySql.Data.Types
       this.minute = minute;
       this.second = second;
       this.microsecond = microsecond;
-      this.millisecond = this.microsecond / 1000;
       this.TimezoneOffset = 0;
     }
 
@@ -189,12 +187,11 @@ namespace MySql.Data.Types
     /// expressed as a value between 0 and 999
     /// </summary>
     public int Millisecond {
-      get { return millisecond; }
+      get { return this.microsecond / 1000; }
       set
       {
         if (value < 0 || value > 999)
           throw new ArgumentOutOfRangeException("Millisecond", MySqlClient.Properties.Resources.InvalidMillisecondValue);
-        millisecond = value;
         microsecond = value * 1000;
       }
     }
@@ -210,7 +207,6 @@ namespace MySql.Data.Types
         if (value < 0 || value > 999999)
           throw new ArgumentOutOfRangeException("Microsecond", MySqlClient.Properties.Resources.InvalidMicrosecondValue);
         microsecond = value;
-        millisecond = value / 1000;
       }
     }
 
@@ -436,9 +432,6 @@ namespace MySql.Data.Types
     {
         if (!IsValidDateTime)
             throw new MySqlConversionException("Unable to convert MySQL date/time value to System.DateTime");
-
-        if ((millisecond < 0) || (millisecond >= 0x3e8))
-            millisecond = (int)(millisecond / 0x3e8);
 
         DateTimeKind kind = DateTimeKind.Unspecified;
         if (convertTimeZone)
